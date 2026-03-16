@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",        // Node.js原生模块规范（解决import报错）
+    "moduleResolution": "Node",  // 按Node规则解析模块
+    "target": "ES2020",          // 兼容Node.js 16+/18+
+    "rootDir": "./src",          // 源码目录
+    "outDir": "./dist",          // 编译输出目录
+    "esModuleInterop": true,     // 兼容ES模块导入CommonJS（核心！解决import express报错）
+    "strict": true,              // 严格类型校验
+    "skipLibCheck": true,        // 跳过第三方库类型校验
+    "forceConsistentCasingInFileNames": true, // 避免文件名大小写问题
+    "types": ["node"]            // 引入Node.js类型定义
+  },
+  "include": ["src/**/*"],       // 只编译src目录
+  "exclude": ["node_modules", "dist"] // 排除无需编译的目录
+}

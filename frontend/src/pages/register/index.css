@@ -1,0 +1,50 @@
+/**
+ * 注册页面样式
+ */
+
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.register-card {
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.register-title {
+  margin-bottom: 0 !important;
+  color: #333;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: 16px;
+  color: #666;
+}
+
+.register-footer a {
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .register-card {
+    width: 90%;
+    margin: 0 16px;
+  }
+}
