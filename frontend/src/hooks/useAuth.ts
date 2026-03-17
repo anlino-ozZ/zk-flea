@@ -18,6 +18,7 @@ interface UseAuthReturn {
   login: () => void;           // 跳转到登录页
   logout: () => void;          // 退出登录
   checkAuth: () => Promise<void>; // 验证 Token 有效性
+  refreshUserInfo: () => Promise<void>; // 刷新用户信息
 }
 
 /**
@@ -99,6 +100,23 @@ export function useAuth(): UseAuthReturn {
     navigate('/login');
   }, [navigate]);
 
+  /**
+   * 刷新用户信息
+   * 从后端获取最新用户信息
+   */
+  const refreshUserInfo = useCallback(async (): Promise<void> => {
+    try {
+      const response = await getUserInfo();
+      if (response.code === 200) {
+        setUserInfo(response.data);
+        // 同时更新 localStorage
+        localStorage.setItem('userInfo', JSON.stringify(response.data));
+      }
+    } catch (error) {
+      console.error('刷新用户信息失败:', error);
+    }
+  }, []);
+
   // 组件挂载时验证 Token
   useEffect(() => {
     checkAuth();
@@ -110,7 +128,8 @@ export function useAuth(): UseAuthReturn {
     isLoading,
     login,
     logout: handleLogout,
-    checkAuth
+    checkAuth,
+    refreshUserInfo
   };
 }
 

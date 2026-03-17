@@ -5,7 +5,7 @@
 
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { findUserByUsername, findUserByPhone, findUserById, createUser, RegisterParams, LoginParams, UserInfo, JwtPayload } from '../models/User';
+import { findUserByUsername, findUserByPhone, findUserById, createUser, updateUser, RegisterParams, LoginParams, UpdateUserParams, UserInfo, JwtPayload } from '../models/User';
 import { generateToken } from '../middlewares/auth';
 
 /**
@@ -214,8 +214,75 @@ export const getUserInfoHandler = (req: Request, res: Response): void => {
   }
 };
 
+/**
+ * 更新当前用户信息
+ * PUT /api/user/profile
+ * Body参数:
+ *   - phone: 手机号（可选）
+ *   - avatar: 头像URL（可选）
+ * 需要在请求头中携带 Authorization: Bearer <token>
+ */
+export const updateUserInfoHandler = (req: Request, res: Response): void => {
+  try {
+    // 从扩展的 Request 对象获取用户信息（由中间件注入）
+    const authReq = req as import('../middlewares/auth').AuthRequest;
+    const user = authReq.user;
+
+    if (!user) {
+      res.status(401).json(errorResponse(401, '未登录'));
+      return;
+    }
+
+    const updates = req.body as UpdateUserParams;
+
+    // 验证手机号格式（如果提供了手机号）
+    if (updates.phone) {
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phoneRegex.test(updates.phone)) {
+        res.status(400).json(errorResponse(400, '请输入有效的手机号'));
+        return;
+      }
+
+      // 检查手机号是否被其他用户占用
+      const existingPhone = findUserByPhone(updates.phone);
+      if (existingPhone && existingPhone.id !== user.userId) {
+        res.status(400).json(errorResponse(400, '手机号已被其他用户使用'));
+        return;
+      }
+    }
+
+    // 验证头像URL格式（如果提供了头像）
+    if (updates.avatar && !updates.avatar.startsWith('http://') && !updates.avatar.startsWith('https://')) {
+      res.status(400).json(errorResponse(400, '头像URL格式不正确'));
+      return;
+    }
+
+    // 更新用户信息
+    const updatedUser = updateUser(user.userId, updates);
+    if (!updatedUser) {
+      res.status(404).json(errorResponse(404, '用户不存在'));
+      return;
+    }
+
+    // 返回更新后的用户信息（不含密码）
+    const userInfo: UserInfo = {
+      id: updatedUser.id,
+      username: updatedUser.username,
+      phone: updatedUser.phone,
+      avatar: updatedUser.avatar,
+      createdAt: updatedUser.createdAt
+    };
+
+    res.json(successResponse(userInfo, '信息更新成功'));
+  } catch (error) {
+    console.error('更新用户信息失败:', error);
+    res.status(500).json(errorResponse(500, '服务器内部错误'));
+  }
+};
+
 export default {
   registerHandler,
   loginHandler,
-  getUserInfoHandler
+  getUserInfoHandler,
+  updateUserInfoHandler
 };

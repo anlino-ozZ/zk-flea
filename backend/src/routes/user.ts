@@ -4,7 +4,7 @@
  */
 
 import { Router } from 'express';
-import { registerHandler, loginHandler, getUserInfoHandler } from '../controllers/userController';
+import { registerHandler, loginHandler, getUserInfoHandler, updateUserInfoHandler } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/auth';
 
 // 创建路由实例
@@ -27,5 +27,11 @@ router.post('/login', loginHandler);
  * 获取当前用户信息（需要登录）
  */
 router.get('/info', authMiddleware, getUserInfoHandler);
+
+/**
+ * PUT /api/user/profile
+ * 更新当前用户信息（需要登录）
+ */
+router.put('/profile', authMiddleware, updateUserInfoHandler);
 
 export default router;

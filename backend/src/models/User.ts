@@ -21,6 +21,12 @@ export interface RegisterParams {
   phone: string;
 }
 
+// 更新用户信息参数
+export interface UpdateUserParams {
+  phone?: string;
+  avatar?: string;
+}
+
 // 登录请求参数
 export interface LoginParams {
   username: string;
@@ -107,10 +113,34 @@ export function getMockUsers(): User[] {
   return mockUsers;
 }
 
+/**
+ * 更新用户信息
+ * @param id 用户ID
+ * @param updates 要更新的字段
+ * @returns 更新后的用户或null
+ */
+export function updateUser(id: number, updates: UpdateUserParams): User | null {
+  const userIndex = mockUsers.findIndex(user => user.id === id);
+  if (userIndex === -1) {
+    return null;
+  }
+  
+  const user = mockUsers[userIndex];
+  const updatedUser: User = {
+    ...user,
+    ...updates,
+    updatedAt: new Date().toISOString()
+  };
+  
+  mockUsers[userIndex] = updatedUser;
+  return updatedUser;
+}
+
 export default {
   findUserByUsername,
   findUserByPhone,
   findUserById,
   createUser,
-  getMockUsers
+  getMockUsers,
+  updateUser
 };

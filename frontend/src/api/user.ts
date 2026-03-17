@@ -10,7 +10,8 @@ import type {
   LoginApiResponse,
   RegisterApiResponse,
   UserInfoApiResponse,
-  UserInfo
+  UserInfo,
+  UpdateUserParams
 } from '../types/user';
 
 /**
@@ -39,6 +40,16 @@ export async function register(params: RegisterParams): Promise<RegisterApiRespo
  */
 export async function getUserInfo(): Promise<UserInfoApiResponse> {
   const response = await request.get<UserInfoApiResponse>('/api/user/info');
+  return response.data;
+}
+
+/**
+ * 更新当前用户信息
+ * @param params - 更新参数（手机号、头像）
+ * @returns Promise 更新后的用户信息
+ */
+export async function updateUserInfo(params: UpdateUserParams): Promise<UserInfoApiResponse> {
+  const response = await request.put<UserInfoApiResponse>('/api/user/profile', params);
   return response.data;
 }
 

@@ -5,6 +5,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import HomePage from './pages/home';
+import ProfilePage from './pages/profile';
 import './App.css';
 
 // 自定义校园主题（校徽蓝为例，可改）
@@ -22,7 +23,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<HomePage />} />
         </Routes>
       </HashRouter>
     </ConfigProvider>

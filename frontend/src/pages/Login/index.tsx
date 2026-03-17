@@ -26,8 +26,11 @@ const LoginPage: React.FC = () => {
       
       if (res.code === 200) {
         // 保存token和用户信息
+        console.log('保存token:', res.data.token);
+        console.log('保存user:', res.data.user);
         setToken(res.data.token);
         setUserInfo(res.data.user);
+        console.log('localStorage里:', localStorage.getItem('userInfo'));
         message.success('登录成功');
         navigate('/');
       } else {

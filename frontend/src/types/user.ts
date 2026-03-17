@@ -25,6 +25,12 @@ export interface LoginParams {
   password: string;
 }
 
+// 更新用户信息请求参数
+export interface UpdateUserParams {
+  phone?: string;
+  avatar?: string;
+}
+
 // 登录响应数据
 export interface LoginResponse {
   token: string;        // JWT Token

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Card, Button, Typography, Space } from 'antd';
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getUserInfoFromStorage, removeToken, removeUserInfo } from '../../api/user';
 
@@ -13,6 +13,9 @@ const { Title, Text } = Typography;
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const userInfo = getUserInfoFromStorage();
+  console.log('首页渲染, userInfo:', userInfo);
+  console.log('token:', localStorage.getItem('token'));
+  console.log('userInfo:', localStorage.getItem('userInfo'));
 
   const handleLogout = (): void => {
     removeToken();
@@ -35,14 +38,22 @@ const HomePage: React.FC = () => {
             <Text>手机号：{userInfo.phone}</Text>
           )}
 
-          <Button 
-            type="primary" 
-            danger 
-            icon={<LogoutOutlined />} 
-            onClick={handleLogout}
-          >
-            退出登录
-          </Button>
+          <Space>
+            <Button 
+              type="primary" 
+              icon={<SettingOutlined />}
+              onClick={() => navigate('/profile')}
+            >
+              个人中心
+            </Button>
+            <Button 
+              danger 
+              icon={<LogoutOutlined />} 
+              onClick={handleLogout}
+            >
+              退出登录
+            </Button>
+          </Space>
         </Space>
       </Card>
     </div>
