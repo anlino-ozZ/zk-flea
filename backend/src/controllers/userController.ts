@@ -5,7 +5,7 @@
 
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { findUserByUsername, findUserByPhone, findUserById, createUser, updateUser, RegisterParams, LoginParams, UpdateUserParams, UserInfo, JwtPayload } from '../models/User';
+import User from '../models/User';
 import { generateToken } from '../middlewares/auth';
 
 /**
@@ -15,6 +15,17 @@ interface ApiResponse<T = unknown> {
   code: number;
   msg: string;
   data: T;
+}
+
+/**
+ * 用户信息类型
+ */
+interface UserInfo {
+  id: number;
+  username: string;
+  phone: string;
+  avatar: string;
+  createdAt: string;
 }
 
 /**
@@ -42,14 +53,10 @@ function errorResponse(code: number, msg: string): ApiResponse {
 /**
  * 用户注册
  * POST /api/user/register
- * Body参数:
- *   - username: 用户名（3-20个字符）
- *   - password: 密码（6-20个字符）
- *   - phone: 手机号（11位数字）
  */
 export const registerHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, password, phone } = req.body as RegisterParams;
+    const { username, password, phone } = req.body;
 
     // 参数校验
     if (!username || !password || !phone) {
@@ -77,14 +84,14 @@ export const registerHandler = async (req: Request, res: Response): Promise<void
     }
 
     // 检查用户名是否已存在
-    const existingUser = findUserByUsername(username);
+    const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
       res.status(400).json(errorResponse(400, '用户名已被注册'));
       return;
     }
 
     // 检查手机号是否已存在
-    const existingPhone = findUserByPhone(phone);
+    const existingPhone = await User.findOne({ where: { phone } });
     if (existingPhone) {
       res.status(400).json(errorResponse(400, '手机号已被注册'));
       return;
@@ -95,7 +102,7 @@ export const registerHandler = async (req: Request, res: Response): Promise<void
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // 创建用户
-    const newUser = createUser({
+    const newUser = await User.create({
       username,
       password: hashedPassword,
       phone,
@@ -108,7 +115,7 @@ export const registerHandler = async (req: Request, res: Response): Promise<void
       username: newUser.username,
       phone: newUser.phone,
       avatar: newUser.avatar,
-      createdAt: newUser.createdAt
+      createdAt: newUser.createdAt.toISOString()
     };
 
     res.status(201).json(successResponse(userInfo, '注册成功'));
@@ -121,13 +128,10 @@ export const registerHandler = async (req: Request, res: Response): Promise<void
 /**
  * 用户登录
  * POST /api/user/login
- * Body参数:
- *   - username: 用户名
- *   - password: 密码
  */
 export const loginHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, password } = req.body as LoginParams;
+    const { username, password } = req.body;
 
     // 参数校验
     if (!username || !password) {
@@ -136,7 +140,7 @@ export const loginHandler = async (req: Request, res: Response): Promise<void> =
     }
 
     // 查找用户
-    const user = findUserByUsername(username);
+    const user = await User.findOne({ where: { username } });
     if (!user) {
       res.status(401).json(errorResponse(401, '用户名或密码错误'));
       return;
@@ -150,7 +154,7 @@ export const loginHandler = async (req: Request, res: Response): Promise<void> =
     }
 
     // 生成 JWT Token
-    const payload: JwtPayload = {
+    const payload = {
       userId: user.id,
       username: user.username
     };
@@ -162,7 +166,7 @@ export const loginHandler = async (req: Request, res: Response): Promise<void> =
       username: user.username,
       phone: user.phone,
       avatar: user.avatar,
-      createdAt: user.createdAt
+      createdAt: user.createdAt.toISOString()
     };
 
     res.json(successResponse({
@@ -178,9 +182,8 @@ export const loginHandler = async (req: Request, res: Response): Promise<void> =
 /**
  * 获取当前用户信息
  * GET /api/user/info
- * 需要在请求头中携带 Authorization: Bearer <token>
  */
-export const getUserInfoHandler = (req: Request, res: Response): void => {
+export const getUserInfoHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     // 从扩展的 Request 对象获取用户信息（由中间件注入）
     const authReq = req as import('../middlewares/auth').AuthRequest;
@@ -192,7 +195,7 @@ export const getUserInfoHandler = (req: Request, res: Response): void => {
     }
 
     // 查找用户信息
-    const userData = findUserById(user.userId);
+    const userData = await User.findByPk(user.userId);
     if (!userData) {
       res.status(404).json(errorResponse(404, '用户不存在'));
       return;
@@ -204,7 +207,7 @@ export const getUserInfoHandler = (req: Request, res: Response): void => {
       username: userData.username,
       phone: userData.phone,
       avatar: userData.avatar,
-      createdAt: userData.createdAt
+      createdAt: userData.createdAt.toISOString()
     };
 
     res.json(successResponse(userInfo));
@@ -217,12 +220,8 @@ export const getUserInfoHandler = (req: Request, res: Response): void => {
 /**
  * 更新当前用户信息
  * PUT /api/user/profile
- * Body参数:
- *   - phone: 手机号（可选）
- *   - avatar: 头像URL（可选）
- * 需要在请求头中携带 Authorization: Bearer <token>
  */
-export const updateUserInfoHandler = (req: Request, res: Response): void => {
+export const updateUserInfoHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     // 从扩展的 Request 对象获取用户信息（由中间件注入）
     const authReq = req as import('../middlewares/auth').AuthRequest;
@@ -233,18 +232,18 @@ export const updateUserInfoHandler = (req: Request, res: Response): void => {
       return;
     }
 
-    const updates = req.body as UpdateUserParams;
+    const { phone, avatar } = req.body;
 
     // 验证手机号格式（如果提供了手机号）
-    if (updates.phone) {
+    if (phone) {
       const phoneRegex = /^1[3-9]\d{9}$/;
-      if (!phoneRegex.test(updates.phone)) {
+      if (!phoneRegex.test(phone)) {
         res.status(400).json(errorResponse(400, '请输入有效的手机号'));
         return;
       }
 
       // 检查手机号是否被其他用户占用
-      const existingPhone = findUserByPhone(updates.phone);
+      const existingPhone = await User.findOne({ where: { phone } });
       if (existingPhone && existingPhone.id !== user.userId) {
         res.status(400).json(errorResponse(400, '手机号已被其他用户使用'));
         return;
@@ -252,25 +251,30 @@ export const updateUserInfoHandler = (req: Request, res: Response): void => {
     }
 
     // 验证头像URL格式（如果提供了头像）
-    if (updates.avatar && !updates.avatar.startsWith('http://') && !updates.avatar.startsWith('https://')) {
+    if (avatar && !avatar.startsWith('http://') && !avatar.startsWith('https://')) {
       res.status(400).json(errorResponse(400, '头像URL格式不正确'));
       return;
     }
 
-    // 更新用户信息
-    const updatedUser = updateUser(user.userId, updates);
-    if (!updatedUser) {
+    // 查找并更新用户信息
+    const userData = await User.findByPk(user.userId);
+    if (!userData) {
       res.status(404).json(errorResponse(404, '用户不存在'));
       return;
     }
 
+    // 更新用户信息
+    if (phone) userData.phone = phone;
+    if (avatar) userData.avatar = avatar;
+    await userData.save();
+
     // 返回更新后的用户信息（不含密码）
     const userInfo: UserInfo = {
-      id: updatedUser.id,
-      username: updatedUser.username,
-      phone: updatedUser.phone,
-      avatar: updatedUser.avatar,
-      createdAt: updatedUser.createdAt
+      id: userData.id,
+      username: userData.username,
+      phone: userData.phone,
+      avatar: userData.avatar,
+      createdAt: userData.createdAt.toISOString()
     };
 
     res.json(successResponse(userInfo, '信息更新成功'));

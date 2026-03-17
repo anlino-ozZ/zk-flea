@@ -5,7 +5,7 @@
 
 import { Request, Response } from 'express';
 import { addCollect, removeCollect, isCollected, getUserCollects, getUserCollectGoodsIds } from '../models/Collect';
-import { getGoodsById } from '../models/goods';
+import Goods from '../models/goods';
 
 /**
  * 统一响应结构接口
@@ -41,10 +41,8 @@ function errorResponse(code: number, msg: string): ApiResponse {
 /**
  * 收藏商品
  * POST /api/collect/add
- * Body参数:
- *   - goodsId: 商品ID
  */
-export const addCollectHandler = (req: Request, res: Response): void => {
+export const addCollectHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const authReq = req as import('../middlewares/auth').AuthRequest;
     const user = authReq.user;
@@ -62,21 +60,26 @@ export const addCollectHandler = (req: Request, res: Response): void => {
     }
 
     // 检查商品是否存在
-    const goods = getGoodsById(goodsId);
+    const goods = await Goods.findByPk(goodsId);
     if (!goods) {
       res.status(404).json(errorResponse(404, '商品不存在'));
       return;
     }
 
     // 添加收藏
-    const collect = addCollect(user.userId, goodsId);
+    const collect = await addCollect(user.userId, goodsId);
 
     if (!collect) {
       res.status(400).json(errorResponse(400, '已收藏该商品'));
       return;
     }
 
-    res.json(successResponse(collect, '收藏成功'));
+    res.json(successResponse({
+      id: collect.id,
+      userId: collect.userId,
+      goodsId: collect.goodsId,
+      createdAt: collect.createdAt.toISOString()
+    }, '收藏成功'));
   } catch (error) {
     console.error('收藏失败:', error);
     res.status(500).json(errorResponse(500, '服务器内部错误'));
@@ -86,10 +89,8 @@ export const addCollectHandler = (req: Request, res: Response): void => {
 /**
  * 取消收藏
  * DELETE /api/collect/remove
- * Body参数:
- *   - goodsId: 商品ID
  */
-export const removeCollectHandler = (req: Request, res: Response): void => {
+export const removeCollectHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const authReq = req as import('../middlewares/auth').AuthRequest;
     const user = authReq.user;
@@ -107,7 +108,7 @@ export const removeCollectHandler = (req: Request, res: Response): void => {
     }
 
     // 取消收藏
-    const removed = removeCollect(user.userId, goodsId);
+    const removed = await removeCollect(user.userId, goodsId);
 
     if (!removed) {
       res.status(400).json(errorResponse(400, '取消收藏失败'));
@@ -125,7 +126,7 @@ export const removeCollectHandler = (req: Request, res: Response): void => {
  * 获取用户收藏列表
  * GET /api/collect/list
  */
-export const getCollectListHandler = (req: Request, res: Response): void => {
+export const getCollectListHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const authReq = req as import('../middlewares/auth').AuthRequest;
     const user = authReq.user;
@@ -136,14 +137,41 @@ export const getCollectListHandler = (req: Request, res: Response): void => {
     }
 
     // 获取用户收藏的商品ID列表
-    const goodsIds = getUserCollectGoodsIds(user.userId);
+    const goodsIds = await getUserCollectGoodsIds(user.userId);
 
     // 获取商品详情
-    const goodsList = goodsIds
-      .map(id => getGoodsById(id))
-      .filter(goods => goods !== null);
+    const goodsList = await Goods.findAll({
+      where: {
+        id: goodsIds
+      }
+    });
 
-    res.json(successResponse(goodsList, '获取收藏列表成功'));
+    // 格式化返回数据
+    const result = goodsIds.map(id => {
+      const goods = goodsList.find(g => g.id === id);
+      if (!goods) return null;
+      return {
+        id: goods.id,
+        title: goods.title,
+        description: goods.description,
+        price: goods.price,
+        originalPrice: goods.originalPrice,
+        images: (goods as any).images,
+        categoryId: goods.categoryId,
+        categoryName: goods.categoryName,
+        sellerId: goods.sellerId,
+        sellerName: goods.sellerName,
+        sellerAvatar: goods.sellerAvatar,
+        status: goods.status,
+        viewCount: goods.viewCount,
+        favoriteCount: goods.favoriteCount,
+        createdAt: goods.createdAt.toISOString(),
+        updatedAt: goods.updatedAt.toISOString(),
+        isCollected: true
+      };
+    }).filter(goods => goods !== null);
+
+    res.json(successResponse(result, '获取收藏列表成功'));
   } catch (error) {
     console.error('获取收藏列表失败:', error);
     res.status(500).json(errorResponse(500, '服务器内部错误'));
@@ -154,7 +182,7 @@ export const getCollectListHandler = (req: Request, res: Response): void => {
  * 检查商品是否已收藏
  * GET /api/collect/check/:goodsId
  */
-export const checkCollectHandler = (req: Request, res: Response): void => {
+export const checkCollectHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const authReq = req as import('../middlewares/auth').AuthRequest;
     const user = authReq.user;
@@ -172,7 +200,7 @@ export const checkCollectHandler = (req: Request, res: Response): void => {
       return;
     }
 
-    const collected = isCollected(user.userId, goodsId);
+    const collected = await isCollected(user.userId, goodsId);
 
     res.json(successResponse({ collected }));
   } catch (error) {

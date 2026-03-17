@@ -4,7 +4,8 @@
  */
 
 import { Request, Response } from 'express';
-import { getGoodsList, getGoodsById, GoodsStatus, Goods } from '../models/goods';
+import { Op } from 'sequelize';
+import Goods, { GoodsStatus } from '../models/goods';
 import { isCollected } from '../models/Collect';
 
 /**
@@ -41,25 +42,15 @@ function errorResponse(code: number, msg: string): ApiResponse<null> {
 /**
  * 获取商品列表（支持分页和筛选）
  * GET /api/goods
- * Query参数:
- *   - page: 页码，默认1
- *   - pageSize: 每页数量，默认10
- *   - keyword: 搜索关键词
- *   - categoryId: 分类ID
- *   - status: 商品状态
- *   - minPrice: 最低价格
- *   - maxPrice: 最高价格
- *   - sortBy: 排序字段（createdAt/price/viewCount）
- *   - sortOrder: 排序方向（asc/desc）
  */
-export const getGoodsListHandler = (req: Request, res: Response): void => {
+export const getGoodsListHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     // 解析并验证查询参数
     const page = parseInt(req.query.page as string, 10) || 1;
     const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
     const keyword = req.query.keyword as string | undefined;
     const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string, 10) : undefined;
-    const status = req.query.status as GoodsStatus | undefined;
+    const status = req.query.status as string | undefined;
     const minPrice = req.query.minPrice ? parseInt(req.query.minPrice as string, 10) : undefined;
     const maxPrice = req.query.maxPrice ? parseInt(req.query.maxPrice as string, 10) : undefined;
     const sortBy = req.query.sortBy as 'createdAt' | 'price' | 'viewCount' | undefined;
@@ -75,21 +66,80 @@ export const getGoodsListHandler = (req: Request, res: Response): void => {
       return;
     }
 
-    // 调用模型层获取数据
-    const result = getGoodsList({
-      page,
-      pageSize,
-      keyword,
-      categoryId,
-      status,
-      minPrice,
-      maxPrice,
-      sortBy,
-      sortOrder
+    // 构建查询条件
+    const where: any = {};
+    
+    if (keyword) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${keyword}%` } },
+        { description: { [Op.like]: `%${keyword}%` } }
+      ];
+    }
+    
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+    
+    if (status) {
+      where.status = status;
+    } else {
+      where.status = GoodsStatus.ON_SALE; // 默认查询在售商品
+    }
+    
+    if (minPrice !== undefined) {
+      where.price = { ...where.price, [Op.gte]: minPrice };
+    }
+    
+    if (maxPrice !== undefined) {
+      where.price = { ...where.price, [Op.lte]: maxPrice };
+    }
+
+    // 构建排序
+    const order: any[] = [];
+    if (sortBy) {
+      order.push([sortBy, sortOrder || 'desc']);
+    } else {
+      order.push(['createdAt', 'desc']);
+    }
+
+    // 查询数据库
+    const { count, rows } = await Goods.findAndCountAll({
+      where,
+      order,
+      limit: pageSize,
+      offset: (page - 1) * pageSize
     });
 
+    // 格式化返回数据
+    const list = rows.map(goods => ({
+      id: goods.id,
+      title: goods.title,
+      description: goods.description,
+      price: goods.price,
+      originalPrice: goods.originalPrice,
+      images: (goods as any).images, // 使用 getter 获取数组
+      categoryId: goods.categoryId,
+      categoryName: goods.categoryName,
+      sellerId: goods.sellerId,
+      sellerName: goods.sellerName,
+      sellerAvatar: goods.sellerAvatar,
+      status: goods.status,
+      viewCount: goods.viewCount,
+      favoriteCount: goods.favoriteCount,
+      createdAt: goods.createdAt.toISOString(),
+      updatedAt: goods.updatedAt.toISOString()
+    }));
+
+    const totalPages = Math.ceil(count / pageSize);
+
     // 返回成功响应
-    res.json(successResponse(result, '获取商品列表成功'));
+    res.json(successResponse({
+      list,
+      total: count,
+      page,
+      pageSize,
+      totalPages
+    }, '获取商品列表成功'));
   } catch (error) {
     console.error('获取商品列表失败:', error);
     res.status(500).json(errorResponse(500, '服务器内部错误'));
@@ -99,10 +149,8 @@ export const getGoodsListHandler = (req: Request, res: Response): void => {
 /**
  * 获取商品详情
  * GET /api/goods/:id
- * Path参数:
- *   - id: 商品ID
  */
-export const getGoodsDetailHandler = (req: Request, res: Response): void => {
+export const getGoodsDetailHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     // Express 5.x 中 params 可能是数组，需要确保是字符串
     const idParam = req.params.id;
@@ -113,7 +161,7 @@ export const getGoodsDetailHandler = (req: Request, res: Response): void => {
       return;
     }
 
-    const goods = getGoodsById(id);
+    const goods = await Goods.findByPk(id);
 
     if (!goods) {
       res.status(404).json(errorResponse(404, '商品不存在'));
@@ -124,12 +172,27 @@ export const getGoodsDetailHandler = (req: Request, res: Response): void => {
     let collected = false;
     const authReq = req as import('../middlewares/auth').AuthRequest;
     if (authReq.user) {
-      collected = isCollected(authReq.user.userId, id);
+      collected = await isCollected(authReq.user.userId, id);
     }
 
     // 返回商品详情，添加 isCollected 字段
     const goodsWithCollected = {
-      ...goods,
+      id: goods.id,
+      title: goods.title,
+      description: goods.description,
+      price: goods.price,
+      originalPrice: goods.originalPrice,
+      images: (goods as any).images,
+      categoryId: goods.categoryId,
+      categoryName: goods.categoryName,
+      sellerId: goods.sellerId,
+      sellerName: goods.sellerName,
+      sellerAvatar: goods.sellerAvatar,
+      status: goods.status,
+      viewCount: goods.viewCount,
+      favoriteCount: goods.favoriteCount,
+      createdAt: goods.createdAt.toISOString(),
+      updatedAt: goods.updatedAt.toISOString(),
       isCollected: collected
     };
 

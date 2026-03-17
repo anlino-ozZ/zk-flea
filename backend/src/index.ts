@@ -1,6 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import './config/db';
+import './models/User';
+import './models/goods';
+import './models/Collect';
 import goodsRouter from './routes/goods';
 import userRouter from './routes/user';
 import collectRouter from './routes/collect';
