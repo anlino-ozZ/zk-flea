@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import goodsRouter from './routes/goods';
 import userRouter from './routes/user';
+import collectRouter from './routes/collect';
 
 // 初始化Express
 const app = express();
@@ -23,6 +24,9 @@ app.use('/api/user', userRouter);
 
 // 商品相关路由
 app.use('/api/goods', goodsRouter);
+
+// 收藏相关路由
+app.use('/api/collect', collectRouter);
 
 // 启动服务
 app.listen(PORT, () => {

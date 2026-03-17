@@ -30,6 +30,7 @@ export interface Goods {
   favoriteCount: number; // 收藏次数
   createdAt: string;    // 创建时间（ISO字符串）
   updatedAt: string;   // 更新时间（ISO字符串）
+  isCollected?: boolean; // 当前用户是否已收藏
 }
 
 // 分页请求参数

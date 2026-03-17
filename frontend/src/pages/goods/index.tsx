@@ -4,64 +4,14 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Pagination, Input, Select, Spin, Empty, Tag } from 'antd';
-import { SearchOutlined, EyeOutlined, HeartOutlined } from '@ant-design/icons';
+import { Row, Col, Pagination, Input, Select, Spin, Empty } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import type { Goods, GoodsListParams, GoodsListResponse } from '../../types/goods';
-import { getGoodsList, formatPrice } from '../../api/goods';
+import { getGoodsList } from '../../api/goods';
+import GoodsCard from '../../components/GoodsCard';
 import './index.css';
 
 const { Option } = Select;
-
-/**
- * 商品卡片组件
- */
-const GoodsCard: React.FC<{ goods: Goods }> = ({ goods }) => {
-  return (
-    <Card
-      hoverable
-      className="goods-card"
-      cover={
-        <div className="goods-image-container">
-          <img
-            alt={goods.title}
-            src={goods.images[0] || 'https://via.placeholder.com/400x400'}
-            className="goods-image"
-          />
-          <Tag color="green" className="goods-status-tag">
-            {goods.categoryName}
-          </Tag>
-        </div>
-      }
-    >
-      <Card.Meta
-        title={<div className="goods-title">{goods.title}</div>}
-        description={
-          <div className="goods-info">
-            <div className="goods-price">
-              <span className="current-price">{formatPrice(goods.price)}</span>
-              <span className="original-price">{formatPrice(goods.originalPrice)}</span>
-            </div>
-            <div className="goods-description">{goods.description}</div>
-            <div className="goods-meta">
-              <span className="seller">
-                <img
-                  src={goods.sellerAvatar}
-                  alt={goods.sellerName}
-                  className="seller-avatar"
-                />
-                <span>{goods.sellerName}</span>
-              </span>
-              <span className="stats">
-                <EyeOutlined /> {goods.viewCount}
-                <HeartOutlined style={{ marginLeft: 8 }} /> {goods.favoriteCount}
-              </span>
-            </div>
-          </div>
-        }
-      />
-    </Card>
-  );
-};
 
 /**
  * 商品列表页面主组件

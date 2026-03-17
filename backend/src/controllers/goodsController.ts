@@ -4,7 +4,8 @@
  */
 
 import { Request, Response } from 'express';
-import { getGoodsList, getGoodsById, GoodsStatus } from '../models/goods';
+import { getGoodsList, getGoodsById, GoodsStatus, Goods } from '../models/goods';
+import { isCollected } from '../models/Collect';
 
 /**
  * 统一响应结构接口
@@ -119,7 +120,20 @@ export const getGoodsDetailHandler = (req: Request, res: Response): void => {
       return;
     }
 
-    res.json(successResponse(goods, '获取商品详情成功'));
+    // 检查用户是否已收藏
+    let collected = false;
+    const authReq = req as import('../middlewares/auth').AuthRequest;
+    if (authReq.user) {
+      collected = isCollected(authReq.user.userId, id);
+    }
+
+    // 返回商品详情，添加 isCollected 字段
+    const goodsWithCollected = {
+      ...goods,
+      isCollected: collected
+    };
+
+    res.json(successResponse(goodsWithCollected, '获取商品详情成功'));
   } catch (error) {
     console.error('获取商品详情失败:', error);
     res.status(500).json(errorResponse(500, '服务器内部错误'));

@@ -40,8 +40,51 @@ export function formatPrice(price: number): string {
   return `¥${(price / 100).toFixed(2)}`;
 }
 
+/**
+ * 收藏商品
+ * @param goodsId - 商品ID
+ * @returns Promise
+ */
+export async function addCollect(goodsId: number): Promise<ApiResponse> {
+  const response = await request.post<ApiResponse>('/api/collect/add', { goodsId });
+  return response.data;
+}
+
+/**
+ * 取消收藏
+ * @param goodsId - 商品ID
+ * @returns Promise
+ */
+export async function removeCollect(goodsId: number): Promise<ApiResponse> {
+  const response = await request.delete<ApiResponse>('/api/collect/remove', { data: { goodsId } });
+  return response.data;
+}
+
+/**
+ * 获取收藏列表
+ * @returns Promise
+ */
+export async function getCollectList(): Promise<ApiResponse<Goods[]>> {
+  const response = await request.get<ApiResponse<Goods[]>>('/api/collect/list');
+  return response.data;
+}
+
+/**
+ * 检查是否已收藏
+ * @param goodsId - 商品ID
+ * @returns Promise
+ */
+export async function checkCollect(goodsId: number): Promise<ApiResponse<{ collected: boolean }>> {
+  const response = await request.get<ApiResponse<{ collected: boolean }>>(`/api/collect/check/${goodsId}`);
+  return response.data;
+}
+
 export default {
   getGoodsList,
   getGoodsDetail,
-  formatPrice
+  formatPrice,
+  addCollect,
+  removeCollect,
+  getCollectList,
+  checkCollect
 };

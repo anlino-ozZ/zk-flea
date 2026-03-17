@@ -6,6 +6,7 @@ import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import HomePage from './pages/home';
 import ProfilePage from './pages/profile';
+import GoodsListPage from './pages/goods';
 import './App.css';
 
 // 自定义校园主题（校徽蓝为例，可改）
@@ -24,6 +25,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/goods" element={<GoodsListPage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </HashRouter>
