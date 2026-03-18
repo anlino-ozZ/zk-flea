@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, Image, Button, Spin, message, Input, Avatar, Empty, List, Popconfirm } from 'antd';
-import { StarOutlined, StarFilled, UserOutlined, SendOutlined } from '@ant-design/icons';
+import { Card, Image, Button, Spin, message, Input, Avatar, Empty, List } from 'antd';
+import { StarOutlined, StarFilled, UserOutlined, SendOutlined, LeftOutlined } from '@ant-design/icons';
 import { getGoodsDetail, addCollect, removeCollect, checkCollect } from '../../api/goods';
 import { getMessageList, addMessage, replyMessage } from '../../api/message';
 import type { Message } from '../../api/message';
@@ -256,6 +256,16 @@ const DetailPage: React.FC = () => {
 
     return (
         <div className="detail-container">
+            {/* 返回按钮 */}
+            <Button
+                type="text"
+                icon={<LeftOutlined />}
+                onClick={() => navigate(-1)}
+                className="detail-back-btn"
+            >
+                返回
+            </Button>
+
             {/* 商品信息 */}
             <Card className="goods-card">
                 <div className="goods-content">

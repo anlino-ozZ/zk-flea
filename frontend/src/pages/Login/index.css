@@ -1,50 +1,244 @@
 /**
- * 登录页面样式
+ * 登录/注册页面样式 - 绿色主题
  */
 
-.login-page {
+/* 页面容器 - 绿色渐变背景 */
+.auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #f8fff5 0%, #e8f4e0 100%);
+  padding: 20px;
 }
 
-.login-card {
-  width: 400px;
+/* 登录/注册卡片 */
+.auth-card {
+  width: 350px;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(82, 196, 26, 0.15);
+  border: 1px solid #e8f4e0;
+  background: #fff;
 }
 
-.login-header {
+.auth-card .ant-card-body {
+  padding: 24px;
+}
+
+/* 头部标题 */
+.auth-header {
   text-align: center;
   margin-bottom: 24px;
 }
 
-.login-title {
-  margin-bottom: 0 !important;
-  color: #333;
+.auth-title {
+  margin: 0 !important;
+  color: #389e0d !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 16px;
+/* Tabs 标签页样式 */
+.auth-tabs .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.auth-tabs .ant-tabs-tab {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.auth-tabs .ant-tabs-tab:hover {
+  color: #52c41a;
+}
+
+.auth-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #52c41a !important;
+}
+
+.auth-tabs .ant-tabs-ink-bar {
+  background: #52c41a;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* 表单样式 */
+.login-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* 输入框样式 */
+.login-form .ant-input-affix-wrapper {
+  height: 44px;
+  border-radius: 4px;
+  border-color: #e8f4e0;
+  background: #fff;
+}
+
+.login-form .ant-input-affix-wrapper:hover {
+  border-color: #52c41a;
+}
+
+.login-form .ant-input-affix-wrapper:focus,
+.login-form .ant-input-affix-wrapper-focused {
+  border-color: #52c41a;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.1) !important;
+}
+
+.login-form .ant-input {
+  height: 42px;
+  border: none;
+  background: transparent;
+}
+
+.login-form .ant-input:focus {
+  box-shadow: none;
+}
+
+/* 输入框前缀图标 */
+.login-form .ant-input-prefix {
+  color: #52c41a;
+  margin-right: 8px;
+}
+
+/* 密码框显示/隐藏图标 */
+.login-form .ant-input-password-icon {
+  color: #52c41a !important;
+}
+
+.login-form .ant-input-password-icon:hover {
+  color: #389e0d !important;
+}
+
+/* 表单选项行 */
+.form-options {
+  margin-bottom: 8px;
+}
+
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 记住密码复选框 */
+.login-form .ant-checkbox-wrapper {
   color: #666;
 }
 
-.login-footer a {
-  color: #1890ff;
-  cursor: pointer;
+.login-form .ant-checkbox-inner {
+  border-color: #e8f4e0;
+  background: #fff;
 }
 
-.login-footer a:hover {
+.login-form .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.login-form .ant-checkbox:hover .ant-checkbox-inner,
+.login-form .ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: #52c41a;
+}
+
+/* 忘记密码链接 */
+.forgot-link {
+  color: #389e0d;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.forgot-link:hover {
+  color: #52c41a;
   text-decoration: underline;
 }
 
-/* 响应式调整 */
+/* 提交按钮 */
+.submit-btn {
+  height: 44px !important;
+  background: #52c41a !important;
+  border-color: #52c41a !important;
+  border-radius: 4px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  margin-top: 8px;
+}
+
+.submit-btn:hover {
+  background: #389e0d !important;
+  border-color: #389e0d !important;
+}
+
+.submit-btn:focus {
+  background: #52c41a !important;
+  border-color: #52c41a !important;
+}
+
+/* 表单校验错误提示 */
+.ant-form-item-explain-error {
+  color: #f5222d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 响应式 - 移动端 */
 @media (max-width: 480px) {
-  .login-card {
-    width: 90%;
-    margin: 0 16px;
+  .auth-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
+
+  .auth-page {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .auth-card .ant-card-body {
+    padding: 20px 16px;
+    background: #fff;
+    border-radius: 8px;
+  }
+
+  .login-form .ant-input-affix-wrapper {
+    height: 42px;
+  }
+
+  .login-form .ant-input {
+    height: 40px;
+  }
+
+  .submit-btn {
+    height: 42px !important;
+  }
+
+  .options-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* 超小屏幕 < 375px */
+@media (max-width: 375px) {
+  .auth-card .ant-card-body {
+    padding: 16px 12px;
+  }
+
+  .auth-tabs .ant-tabs-tab {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  .login-form .ant-form-item {
+    margin-bottom: 12px;
   }
 }

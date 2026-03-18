@@ -1,11 +1,10 @@
 import axios from 'axios';
 import type { AxiosError, AxiosResponse } from 'axios';
-import { message, Spin } from 'antd';
-import React from 'react';
+import { message } from 'antd';
 
 // 创建 React 全局 Spin 容器
 let loadingCount = 0;
-let spinInstance: React.ReactNode = null;
+let spinInstance: ReturnType<typeof message.loading> | null = null;
 
 const showLoading = (): void => {
   loadingCount++;
@@ -19,7 +18,7 @@ const hideLoading = (): void => {
   if (loadingCount <= 0) {
     loadingCount = 0;
     if (spinInstance) {
-      (spinInstance as any)();
+      spinInstance();
       spinInstance = null;
     }
   }
@@ -33,10 +32,6 @@ const request = axios.create({
         'Content-Type': 'application/json',
     },
 });
-
-// 防抖函数
-const debounceMap = new Map<string, number>();
-const DEBOUNCE_DELAY = 300;
 
 // 请求拦截器
 request.interceptors.request.use(

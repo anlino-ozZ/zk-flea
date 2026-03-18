@@ -34,7 +34,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
   const navigate = useNavigate();
   const [isCollected, setIsCollected] = useState<boolean>(goods.isCollected || false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // 点击卡片跳转到详情页
   const handleClick = () => {

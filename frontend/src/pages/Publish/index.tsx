@@ -5,8 +5,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, InputNumber, Select, Upload, Button, Card, message, Row, Col } from 'antd';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { Form, Input, InputNumber, Select, Button, Card, message, Row, Col } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { publishGoods } from '../../api/publish';
 import type { PublishGoodsParams } from '../../api/publish';
 import { getToken } from '../../api/user';

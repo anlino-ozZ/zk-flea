@@ -3,14 +3,16 @@
  * 用于前后端数据交互的 TypeScript 类型约束
  */
 
-// 商品状态枚举
-export enum GoodsStatus {
-  DRAFT = 'draft',       // 草稿
-  PENDING = 'pending',  // 待审核
-  ON_SALE = 'on_sale',  // 在售
-  SOLD = 'sold',        // 已售出
-  OFF_SHELF = 'off_shelf' // 已下架
-}
+// 商品状态
+export const GoodsStatus = {
+  DRAFT: 'draft',
+  PENDING: 'pending',
+  ON_SALE: 'on_sale',
+  SOLD: 'sold',
+  OFF_SHELF: 'off_shelf',
+} as const;
+
+export type GoodsStatus = typeof GoodsStatus[keyof typeof GoodsStatus];
 
 // 商品实体类型
 export interface Goods {

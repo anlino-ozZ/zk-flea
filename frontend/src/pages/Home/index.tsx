@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Card, Button, Typography, Space } from 'antd';
-import { LogoutOutlined, UserOutlined, ShopOutlined, ShoppingOutlined, PlusOutlined } from '@ant-design/icons';
+import { LogoutOutlined, UserOutlined, ShoppingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getUserInfoFromStorage, removeToken, removeUserInfo } from '../../api/user';
 

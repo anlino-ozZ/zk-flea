@@ -1,0 +1,113 @@
+/* 我的收藏页面样式 */
+
+.collect-page {
+  min-height: 100vh;
+  background-color: #f8fff5;
+}
+
+.collect-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.collect-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8f4e0;
+}
+
+.collect-header h2 {
+  margin: 0;
+  color: #333333;
+  font-size: 20px;
+}
+
+.collect-count {
+  color: #666666;
+  font-size: 14px;
+}
+
+.collect-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.collect-card {
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.collect-card:hover {
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.15);
+  border-color: #a7d967;
+}
+
+.collect-card-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.collect-card-price {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: rgba(82, 196, 26, 0.9);
+  border-color: #52c41a;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.collect-card-title {
+  font-size: 14px;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collect-card-desc {
+  color: #666666;
+}
+
+.collect-card-seller {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collect-seller-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .collect-container {
+    padding: 16px;
+  }
+
+  .collect-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .collect-header h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .collect-card-image img {
+    height: 140px !important;
+  }
+}

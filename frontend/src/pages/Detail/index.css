@@ -4,6 +4,17 @@
     padding: 20px;
 }
 
+/* 返回按钮 */
+.detail-back-btn {
+    color: #52c41a !important;
+    margin-bottom: 16px;
+}
+
+.detail-back-btn:hover {
+    color: #389e0d !important;
+    background-color: #e8f4e0 !important;
+}
+
 .detail-loading {
     display: flex;
     justify-content: center;

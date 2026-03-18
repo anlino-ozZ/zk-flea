@@ -1,0 +1,208 @@
+/* 绿色系导航栏样式 */
+
+.navbar {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e8f4e0 !important;
+  padding: 0 !important;
+  height: 60px !important;
+  line-height: 60px !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.05);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+}
+
+/* Logo 样式 */
+.navbar-logo {
+  font-size: 18px;
+  font-weight: bold;
+  color: #389e0d;
+  white-space: nowrap;
+  margin-right: 32px;
+}
+
+.navbar-logo a {
+  color: #389e0d;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar-logo a:hover {
+  color: #52c41a;
+}
+
+/* 菜单样式 */
+.navbar-menu {
+  flex: 1;
+  border-bottom: none !important;
+  background: transparent !important;
+  line-height: 58px;
+}
+
+.navbar-menu .ant-menu-item {
+  color: #666666 !important;
+}
+
+.navbar-menu .ant-menu-item:hover {
+  color: #52c41a !important;
+}
+
+.navbar-menu .ant-menu-item-selected {
+  color: #52c41a !important;
+  background-color: transparent !important;
+  border-bottom-color: #52c41a !important;
+}
+
+.navbar-menu .ant-menu-item-selected::after {
+  border-bottom-color: #52c41a !important;
+}
+
+/* 用户区域 */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.navbar-user-info:hover {
+  background-color: #f8fff5;
+}
+
+.navbar-username {
+  color: #333333;
+  font-size: 14px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 登录/注册按钮 */
+.navbar-auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-login-btn {
+  color: #52c41a !important;
+}
+
+.navbar-login-btn:hover {
+  color: #389e0d !important;
+  background-color: #e8f4e0 !important;
+}
+
+.navbar-register-btn {
+  background-color: #52c41a !important;
+  border-color: #52c41a !important;
+}
+
+.navbar-register-btn:hover {
+  background-color: #389e0d !important;
+  border-color: #389e0d !important;
+}
+
+/* 移动端按钮 */
+.navbar-mobile-toggle {
+  font-size: 20px;
+  color: #52c41a !important;
+}
+
+/* 抽屉样式 */
+.navbar-drawer .ant-drawer-header {
+  border-bottom: 1px solid #e8f4e0;
+}
+
+.navbar-drawer-title {
+  color: #389e0d;
+  font-weight: bold;
+}
+
+.navbar-drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #f8fff5;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.navbar-drawer-username {
+  color: #333333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.navbar-drawer-auth {
+  padding: 16px;
+  background-color: #f8fff5;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/* PC端显示，移动端隐藏 */
+.navbar-pc {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.navbar-mobile {
+  display: none;
+}
+
+/* 响应式 - 移动端 */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 16px;
+  }
+
+  .navbar-pc {
+    display: none;
+  }
+
+  .navbar-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .navbar-logo {
+    font-size: 16px;
+    margin-right: 0;
+  }
+
+  .navbar-mobile-toggle {
+    font-size: 18px;
+  }
+}
+
+/* 超小屏幕 */
+@media (max-width: 375px) {
+  .navbar-logo {
+    font-size: 14px;
+  }
+}
