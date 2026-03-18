@@ -5,8 +5,9 @@
 
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
+import jwt from 'jsonwebtoken';
 import Goods, { GoodsStatus } from '../models/goods';
-import { isCollected } from '../models/Collect';
+import { isCollected, getUserCollectGoodsIds } from '../models/Collect';
 import User from '../models/User';
 
 /**
@@ -119,27 +120,45 @@ export const getGoodsListHandler = async (req: Request, res: Response): Promise<
     });
     const sellerMap = new Map(sellers.map(s => [s.id, s]));
 
+    // 获取当前用户的收藏状态（可选认证）
+    let userCollectedGoodsIds: number[] = [];
+    const JWT_SECRET = 'zk-flea-secret-key-2024';
+    try {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        const decoded = jwt.verify(token, JWT_SECRET) as { userId?: number };
+        if (decoded?.userId) {
+          userCollectedGoodsIds = await getUserCollectGoodsIds(decoded.userId);
+        }
+      }
+    } catch (error) {
+      // Token 无效或过期，忽略错误，不影响正常返回商品列表
+    }
+    const collectedSet = new Set(userCollectedGoodsIds);
+
     // 格式化返回数据
     const list = rows.map(goods => {
       const seller = sellerMap.get(goods.sellerId);
       return {
-      id: goods.id,
-      title: goods.title,
-      description: goods.description,
-      price: goods.price,
-      originalPrice: goods.originalPrice,
-      images: (goods as any).images, // 使用 getter 获取数组
-      categoryId: goods.categoryId,
-      categoryName: goods.categoryName,
-      sellerId: goods.sellerId,
-      sellerName: seller?.username || goods.sellerName,
-      sellerAvatar: seller?.avatar || goods.sellerAvatar,
-      status: goods.status,
-      viewCount: goods.viewCount,
-      favoriteCount: goods.favoriteCount,
-      createdAt: goods.createdAt.toISOString(),
-      updatedAt: goods.updatedAt.toISOString()
-    };
+        id: goods.id,
+        title: goods.title,
+        description: goods.description,
+        price: goods.price,
+        originalPrice: goods.originalPrice,
+        images: (goods as any).images, // 使用 getter 获取数组
+        categoryId: goods.categoryId,
+        categoryName: goods.categoryName,
+        sellerId: goods.sellerId,
+        sellerName: seller?.username || goods.sellerName,
+        sellerAvatar: seller?.avatar || goods.sellerAvatar,
+        status: goods.status,
+        viewCount: goods.viewCount,
+        favoriteCount: goods.favoriteCount,
+        isCollected: collectedSet.has(goods.id), // 添加收藏状态
+        createdAt: goods.createdAt.toISOString(),
+        updatedAt: goods.updatedAt.toISOString()
+      };
     });
 
     const totalPages = Math.ceil(count / pageSize);

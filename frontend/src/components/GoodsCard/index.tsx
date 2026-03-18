@@ -110,7 +110,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
               type="primary"
               shape="circle"
               className={`collect-btn ${isCollected ? 'collected' : ''}`}
-              icon={isCollected ? <HeartFilled /> : <HeartOutlined />}
+              icon={isCollected ? <HeartFilled style={{ color: '#52c41a' }} /> : <HeartOutlined />}
               onClick={(e) => {
                 e.stopPropagation();
                 handleCollect();
@@ -142,7 +142,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
               <span className="stats">
                 <EyeOutlined /> {goods.viewCount}
                 <span style={{ marginLeft: 8 }}>
-                  {isCollected ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />} {goods.favoriteCount}
+                  {isCollected ? <HeartFilled style={{ color: '#52c41a' }} /> : <HeartOutlined />} {goods.favoriteCount}
                 </span>
               </span>
             </div>

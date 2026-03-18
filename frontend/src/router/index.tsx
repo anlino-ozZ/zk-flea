@@ -102,6 +102,11 @@ const routes: RouteObject[] = [
     path: Routes.GOODS_DETAIL,
     element: <DetailPage />,
   },
+  // 商品详情 - 公开（/detail 路径）
+  {
+    path: '/detail',
+    element: <DetailPage />,
+  },
   // 发布商品 - 需要登录
   {
     path: Routes.PUBLISH,
