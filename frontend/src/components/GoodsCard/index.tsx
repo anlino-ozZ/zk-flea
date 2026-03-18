@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Tag, Button, message } from 'antd';
 import { EyeOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import type { Goods } from '../../types/goods';
@@ -18,9 +19,15 @@ interface GoodsCardProps {
 }
 
 const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showCollect = true }) => {
+  const navigate = useNavigate();
   const [isCollected, setIsCollected] = useState<boolean>(goods.isCollected || false);
   const [loading, setLoading] = useState<boolean>(false);
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // 点击卡片跳转到详情页
+  const handleClick = () => {
+    navigate(`/detail?id=${goods.id}`);
+  };
 
   // 防抖处理收藏操作
   const handleCollect = useCallback(() => {
@@ -75,6 +82,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
     <Card
       hoverable
       className="goods-card"
+      onClick={handleClick}
       cover={
         <div className="goods-image-container">
           <img

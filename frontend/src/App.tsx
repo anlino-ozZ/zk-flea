@@ -7,6 +7,8 @@ import RegisterPage from './pages/register';
 import HomePage from './pages/home';
 import ProfilePage from './pages/profile';
 import GoodsListPage from './pages/goods';
+import DetailPage from './pages/Detail';
+import PublishPage from './pages/Publish';
 import './App.css';
 
 // 自定义校园主题（校徽蓝为例，可改）
@@ -26,6 +28,8 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/goods" element={<GoodsListPage />} />
+          <Route path="/detail" element={<DetailPage />} />
+          <Route path="/publish" element={<PublishPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>

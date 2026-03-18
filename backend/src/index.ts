@@ -5,9 +5,12 @@ import './config/db';
 import './models/User';
 import './models/goods';
 import './models/Collect';
+import './models/Message';
 import goodsRouter from './routes/goods';
 import userRouter from './routes/user';
 import collectRouter from './routes/collect';
+import messageRouter from './routes/message';
+import publishRouter from './routes/publish';
 
 // 初始化Express
 const app = express();
@@ -31,6 +34,12 @@ app.use('/api/goods', goodsRouter);
 
 // 收藏相关路由
 app.use('/api/collect', collectRouter);
+
+// 留言相关路由
+app.use('/api/message', messageRouter);
+
+// 商品发布相关路由
+app.use('/api/publish', publishRouter);
 
 // 启动服务
 app.listen(PORT, () => {

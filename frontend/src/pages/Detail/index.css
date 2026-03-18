@@ -1,0 +1,274 @@
+.detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.detail-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+/* 商品卡片 */
+.goods-card {
+    margin-bottom: 20px;
+}
+
+.goods-content {
+    display: flex;
+    gap: 24px;
+}
+
+.goods-images {
+    flex: 0 0 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.goods-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+.goods-image-placeholder {
+    width: 400px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    color: #999;
+}
+
+.goods-info {
+    flex: 1;
+}
+
+.goods-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.goods-price {
+    margin-bottom: 16px;
+}
+
+.current-price {
+    font-size: 28px;
+    color: #ff4d4f;
+    font-weight: bold;
+    margin-right: 12px;
+}
+
+.original-price {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.goods-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    color: #666;
+}
+
+.goods-seller {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.seller-name {
+    font-weight: 500;
+}
+
+.goods-actions {
+    margin-bottom: 24px;
+}
+
+.goods-description h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.goods-description p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 留言卡片 */
+.message-card {
+    margin-top: 20px;
+}
+
+.message-input {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.submit-btn {
+    margin-top: 12px;
+    float: right;
+}
+
+.login-tip {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.message-list {
+    min-height: 200px;
+}
+
+.message-item {
+    padding: 16px 0 !important;
+    border-bottom: 1px solid #f5f5f5 !important;
+}
+
+.message-main {
+    display: flex;
+    width: 100%;
+}
+
+.message-avatar {
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.message-content-wrap {
+    flex: 1;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.message-header .username {
+    font-weight: 500;
+    color: #333;
+}
+
+.message-header .time {
+    color: #999;
+    font-size: 12px;
+}
+
+.message-text {
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* 回复输入框 */
+.reply-input {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.reply-input .reply-to {
+    display: block;
+    margin-bottom: 8px;
+    color: #1890ff;
+    font-size: 12px;
+}
+
+.reply-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* 回复列表 */
+.replies-list {
+    margin-top: 16px;
+    padding-left: 16px;
+    border-left: 2px solid #e8e8e8;
+}
+
+.reply-item {
+    display: flex;
+    padding: 12px 0;
+    gap: 8px;
+}
+
+.reply-content-wrap {
+    flex: 1;
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.reply-header .username {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.reply-header .reply-to {
+    color: #1890ff;
+    font-size: 12px;
+}
+
+.reply-header .time {
+    color: #999;
+    font-size: 11px;
+}
+
+.reply-text {
+    color: #333;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.load-more {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .goods-content {
+        flex-direction: column;
+    }
+
+    .goods-images {
+        flex: none;
+    }
+
+    .goods-image-placeholder {
+        width: 100%;
+        height: 300px;
+    }
+}
