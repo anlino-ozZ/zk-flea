@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { addMessageHandler, replyMessageHandler, getMessageListHandler } from '../controllers/messageController';
 import { authMiddleware } from '../middlewares/auth';
+import { validate, schemas } from '../utils/validator';
 
 // 创建路由实例
 const router = Router();
@@ -14,19 +15,19 @@ const router = Router();
  * POST /api/message/add
  * 添加留言 - 需要登录
  */
-router.post('/add', authMiddleware, addMessageHandler);
+router.post('/add', authMiddleware, validate(schemas.message, 'body'), addMessageHandler);
 
 /**
  * POST /api/message/reply
  * 回复留言 - 需要登录
  */
-router.post('/reply', authMiddleware, replyMessageHandler);
+router.post('/reply', authMiddleware, validate(schemas.message, 'body'), replyMessageHandler);
 
 /**
  * GET /api/message/list
  * 获取商品留言列表 - 公开接口
  * Query: goodsId, page, pageSize
  */
-router.get('/list', getMessageListHandler);
+router.get('/list', validate(schemas.messageList, 'query'), getMessageListHandler);
 
 export default router;

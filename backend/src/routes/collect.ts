@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { addCollectHandler, removeCollectHandler, getCollectListHandler, checkCollectHandler } from '../controllers/collectController';
 import { authMiddleware } from '../middlewares/auth';
+import { validate, schemas } from '../utils/validator';
 
 // 创建路由实例
 const router = Router();
@@ -14,24 +15,24 @@ const router = Router();
  * POST /api/collect/add
  * 收藏商品 - 需要登录
  */
-router.post('/add', authMiddleware, addCollectHandler);
+router.post('/add', authMiddleware, validate(schemas.collect, 'body'), addCollectHandler);
 
 /**
  * DELETE /api/collect/remove
  * 取消收藏 - 需要登录
  */
-router.delete('/remove', authMiddleware, removeCollectHandler);
+router.delete('/remove', authMiddleware, validate(schemas.collect, 'body'), removeCollectHandler);
 
 /**
  * GET /api/collect/list
  * 获取收藏列表 - 需要登录
  */
-router.get('/list', authMiddleware, getCollectListHandler);
+router.get('/list', authMiddleware, validate(schemas.collectList, 'query'), getCollectListHandler);
 
 /**
  * GET /api/collect/check/:goodsId
  * 检查是否已收藏 - 需要登录
  */
-router.get('/check/:goodsId', authMiddleware, checkCollectHandler);
+router.get('/check/:goodsId', authMiddleware, validate(schemas.goodsIdParam, 'params'), checkCollectHandler);
 
 export default router;

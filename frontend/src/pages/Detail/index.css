@@ -259,16 +259,114 @@
 
 /* 响应式 */
 @media (max-width: 768px) {
+    .detail-container {
+        padding: 12px;
+    }
+
     .goods-content {
         flex-direction: column;
     }
 
     .goods-images {
         flex: none;
+        width: 100%;
+    }
+
+    .goods-image {
+        max-height: 300px;
     }
 
     .goods-image-placeholder {
         width: 100%;
-        height: 300px;
+        height: 250px;
+    }
+
+    .goods-title {
+        font-size: 18px;
+    }
+
+    .current-price {
+        font-size: 22px;
+    }
+
+    .goods-meta {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .goods-seller {
+        padding: 8px;
+    }
+
+    .message-input {
+        padding-bottom: 12px;
+    }
+
+    .message-item {
+        padding: 12px 0 !important;
+    }
+
+    .message-main {
+        flex-direction: column;
+    }
+
+    .message-avatar {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+
+    .replies-list {
+        padding-left: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-container {
+        padding: 8px;
+    }
+
+    .goods-image-placeholder {
+        height: 200px;
+    }
+
+    .goods-title {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .current-price {
+        font-size: 20px;
+    }
+
+    .original-price {
+        font-size: 14px;
+    }
+
+    .goods-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .goods-actions .ant-btn {
+        width: 100%;
+    }
+
+    .goods-description h3 {
+        font-size: 14px;
+    }
+
+    .message-input textarea {
+        min-height: 80px !important;
+    }
+
+    .submit-btn {
+        width: 100%;
+        float: none;
+        margin-top: 8px;
+    }
+
+    .login-tip {
+        padding: 12px;
     }
 }

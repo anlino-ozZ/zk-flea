@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { registerHandler, loginHandler, getUserInfoHandler, updateUserInfoHandler, uploadAvatarHandler } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/auth';
+import { validate, schemas } from '../utils/validator';
 
 // 创建路由实例
 const router = Router();
@@ -14,13 +15,13 @@ const router = Router();
  * POST /api/user/register
  * 用户注册
  */
-router.post('/register', registerHandler);
+router.post('/register', validate(schemas.register, 'body'), registerHandler);
 
 /**
  * POST /api/user/login
  * 用户登录
  */
-router.post('/login', loginHandler);
+router.post('/login', validate(schemas.login, 'body'), loginHandler);
 
 /**
  * GET /api/user/info
@@ -32,7 +33,7 @@ router.get('/info', authMiddleware, getUserInfoHandler);
  * PUT /api/user/profile
  * 更新当前用户信息（需要登录）
  */
-router.put('/profile', authMiddleware, updateUserInfoHandler);
+router.put('/profile', authMiddleware, validate(schemas.updateProfile, 'body'), updateUserInfoHandler);
 
 /**
  * POST /api/user/avatar

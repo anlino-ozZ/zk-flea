@@ -7,6 +7,40 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .goods-card .ant-card-body {
+    padding: 8px;
+  }
+  
+  .goods-title {
+    font-size: 13px;
+  }
+  
+  .current-price {
+    font-size: 14px;
+  }
+  
+  .seller-avatar {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .goods-meta {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .goods-image-container {
+    height: 150px;
+  }
+  
+  .goods-description {
+    display: none;
+  }
+}
+
 .goods-image-container {
   position: relative;
   height: 200px;
