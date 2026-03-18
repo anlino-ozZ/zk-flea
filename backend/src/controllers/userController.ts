@@ -5,8 +5,45 @@
 
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import User from '../models/User';
 import { generateToken } from '../middlewares/auth';
+
+// 配置multer用于头像上传
+const avatarStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../../uploads/avatars');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `avatar-${uniqueSuffix}${ext}`);
+  }
+});
+
+const uploadAvatar = multer({
+  storage: avatarStorage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 限制2MB
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (extname && mimetype) {
+      cb(null, true);
+    } else {
+      cb(new Error('只支持图片文件格式：jpeg, jpg, png, gif, webp'));
+    }
+  }
+});
+
+// 默认头像路径
+const DEFAULT_AVATAR = '/uploads/avatars/default.svg';
 
 /**
  * 统一响应结构接口
@@ -106,7 +143,7 @@ export const registerHandler = async (req: Request, res: Response): Promise<void
       username,
       password: hashedPassword,
       phone,
-      avatar: `https://picsum.photos/100/100?random=${Date.now()}`
+      avatar: DEFAULT_AVATAR
     });
 
     // 返回用户信息（不含密码）
@@ -250,8 +287,8 @@ export const updateUserInfoHandler = async (req: Request, res: Response): Promis
       }
     }
 
-    // 验证头像URL格式（如果提供了头像）
-    if (avatar && !avatar.startsWith('http://') && !avatar.startsWith('https://')) {
+    // 验证头像URL格式（如果提供了头像）- 支持http、https和本地路径
+    if (avatar && !avatar.startsWith('http://') && !avatar.startsWith('https://') && !avatar.startsWith('/uploads/')) {
       res.status(400).json(errorResponse(400, '头像URL格式不正确'));
       return;
     }
@@ -284,9 +321,69 @@ export const updateUserInfoHandler = async (req: Request, res: Response): Promis
   }
 };
 
+/**
+ * 上传头像
+ * POST /api/user/avatar
+ */
+export const uploadAvatarHandler = [
+  uploadAvatar.single('avatar'),
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as import('../middlewares/auth').AuthRequest;
+      const user = authReq.user;
+
+      if (!user) {
+        res.status(401).json(errorResponse(401, '未登录'));
+        return;
+      }
+
+      if (!req.file) {
+        res.status(400).json(errorResponse(400, '请上传头像图片'));
+        return;
+      }
+
+      // 查找用户
+      const userData = await User.findByPk(user.userId);
+      if (!userData) {
+        res.status(404).json(errorResponse(404, '用户不存在'));
+        return;
+      }
+
+      // 删除旧头像（如果不是默认头像）
+      const oldAvatar = userData.avatar;
+      if (oldAvatar && oldAvatar !== DEFAULT_AVATAR && oldAvatar.startsWith('/uploads/')) {
+        const oldAvatarPath = path.join(__dirname, '../../', oldAvatar);
+        if (fs.existsSync(oldAvatarPath)) {
+          fs.unlinkSync(oldAvatarPath);
+        }
+      }
+
+      // 更新用户头像
+      const newAvatar = `/uploads/avatars/${req.file.filename}`;
+      userData.avatar = newAvatar;
+      await userData.save();
+
+      // 返回新的用户信息
+      const userInfo: UserInfo = {
+        id: userData.id,
+        username: userData.username,
+        phone: userData.phone,
+        avatar: userData.avatar,
+        createdAt: userData.createdAt.toISOString()
+      };
+
+      res.json(successResponse(userInfo, '头像上传成功'));
+    } catch (error) {
+      console.error('上传头像失败:', error);
+      res.status(500).json(errorResponse(500, '服务器内部错误'));
+    }
+  }
+];
+
 export default {
   registerHandler,
   loginHandler,
   getUserInfoHandler,
-  updateUserInfoHandler
+  updateUserInfoHandler,
+  uploadAvatarHandler
 };

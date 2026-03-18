@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import Goods, { GoodsStatus } from '../models/goods';
 import { isCollected } from '../models/Collect';
+import User from '../models/User';
 
 /**
  * 统一响应结构接口
@@ -110,8 +111,18 @@ export const getGoodsListHandler = async (req: Request, res: Response): Promise<
       offset: (page - 1) * pageSize
     });
 
+    // 获取所有卖家的最新头像
+    const sellerIds = [...new Set(rows.map(g => g.sellerId))];
+    const sellers = await User.findAll({
+      where: { id: sellerIds },
+      attributes: ['id', 'username', 'avatar']
+    });
+    const sellerMap = new Map(sellers.map(s => [s.id, s]));
+
     // 格式化返回数据
-    const list = rows.map(goods => ({
+    const list = rows.map(goods => {
+      const seller = sellerMap.get(goods.sellerId);
+      return {
       id: goods.id,
       title: goods.title,
       description: goods.description,
@@ -121,14 +132,15 @@ export const getGoodsListHandler = async (req: Request, res: Response): Promise<
       categoryId: goods.categoryId,
       categoryName: goods.categoryName,
       sellerId: goods.sellerId,
-      sellerName: goods.sellerName,
-      sellerAvatar: goods.sellerAvatar,
+      sellerName: seller?.username || goods.sellerName,
+      sellerAvatar: seller?.avatar || goods.sellerAvatar,
       status: goods.status,
       viewCount: goods.viewCount,
       favoriteCount: goods.favoriteCount,
       createdAt: goods.createdAt.toISOString(),
       updatedAt: goods.updatedAt.toISOString()
-    }));
+    };
+    });
 
     const totalPages = Math.ceil(count / pageSize);
 
@@ -175,6 +187,11 @@ export const getGoodsDetailHandler = async (req: Request, res: Response): Promis
       collected = await isCollected(authReq.user.userId, id);
     }
 
+    // 获取卖家最新信息
+    const seller = await User.findByPk(goods.sellerId, {
+      attributes: ['id', 'username', 'avatar']
+    });
+
     // 返回商品详情，添加 isCollected 字段
     const goodsWithCollected = {
       id: goods.id,
@@ -186,8 +203,8 @@ export const getGoodsDetailHandler = async (req: Request, res: Response): Promis
       categoryId: goods.categoryId,
       categoryName: goods.categoryName,
       sellerId: goods.sellerId,
-      sellerName: goods.sellerName,
-      sellerAvatar: goods.sellerAvatar,
+      sellerName: seller?.username || goods.sellerName,
+      sellerAvatar: seller?.avatar || goods.sellerAvatar,
       status: goods.status,
       viewCount: goods.viewCount,
       favoriteCount: goods.favoriteCount,

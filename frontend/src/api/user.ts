@@ -54,6 +54,22 @@ export async function updateUserInfo(params: UpdateUserParams): Promise<UserInfo
 }
 
 /**
+ * 上传头像
+ * @param file - 头像文件
+ * @returns Promise 更新后的用户信息
+ */
+export async function uploadAvatar(file: File): Promise<UserInfoApiResponse> {
+  const formData = new FormData();
+  formData.append('avatar', file);
+  const response = await request.post<UserInfoApiResponse>('/api/user/avatar', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+}
+
+/**
  * 存储 Token 到 localStorage
  * @param token - JWT Token
  */

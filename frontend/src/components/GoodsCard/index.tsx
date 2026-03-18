@@ -18,6 +18,18 @@ interface GoodsCardProps {
   showCollect?: boolean;
 }
 
+// 后端API地址
+const API_PROXY = 'http://localhost:3001';
+
+// 处理头像URL，支持本地路径和远程URL
+const getAvatarUrl = (avatar: string): string => {
+  if (!avatar) return '';
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    return avatar;
+  }
+  return API_PROXY + avatar;
+};
+
 const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showCollect = true }) => {
   const navigate = useNavigate();
   const [isCollected, setIsCollected] = useState<boolean>(goods.isCollected || false);
@@ -121,7 +133,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
             <div className="goods-meta">
               <span className="seller">
                 <img
-                  src={goods.sellerAvatar}
+                  src={getAvatarUrl(goods.sellerAvatar)}
                   alt={goods.sellerName}
                   className="seller-avatar"
                 />

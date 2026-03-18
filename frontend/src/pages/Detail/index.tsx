@@ -15,6 +15,18 @@ import './index.css';
 
 const { TextArea } = Input;
 
+// 后端API地址
+const API_PROXY = 'http://localhost:3001';
+
+// 处理头像URL，支持本地路径和远程URL
+const getAvatarUrl = (avatar: string): string => {
+  if (!avatar) return '';
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    return avatar;
+  }
+  return API_PROXY + avatar;
+};
+
 // 分页配置
 const PAGE_SIZE = 10;
 
@@ -276,7 +288,7 @@ const DetailPage: React.FC = () => {
                             <span>浏览: {goods.viewCount}</span>
                         </div>
                         <div className="goods-seller">
-                            <Avatar icon={<UserOutlined />} src={goods.sellerAvatar} />
+                            <Avatar icon={<UserOutlined />} src={getAvatarUrl(goods.sellerAvatar)} />
                             <span className="seller-name">{goods.sellerName}</span>
                         </div>
                         <div className="goods-actions">
@@ -340,7 +352,7 @@ const DetailPage: React.FC = () => {
                                         <List.Item className="message-item">
                                             <div className="message-main">
                                                 <Avatar
-                                                    src={item.user?.avatar}
+                                                    src={getAvatarUrl(item.user?.avatar || '')}
                                                     icon={<UserOutlined />}
                                                     className="message-avatar"
                                                 />
