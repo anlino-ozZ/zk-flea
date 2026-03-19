@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, Image, Button, Spin, message, Input, Avatar, Empty, List } from 'antd';
-import { StarOutlined, StarFilled, UserOutlined, SendOutlined, LeftOutlined } from '@ant-design/icons';
+import { HeartOutlined, HeartFilled, UserOutlined, SendOutlined, LeftOutlined, EyeOutlined } from '@ant-design/icons';
 import { getGoodsDetail, addCollect, removeCollect, checkCollect } from '../../api/goods';
 import { getMessageList, addMessage, replyMessage } from '../../api/message';
 import type { Message } from '../../api/message';
@@ -233,6 +233,19 @@ const DetailPage: React.FC = () => {
     // 格式化价格
     const formatPrice = (price: number) => `¥${(price / 100).toFixed(2)}`;
 
+    // 格式化日期
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    // 当前选中的图片索引
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
     // 加载更多留言
     const loadMoreMessages = () => {
         loadMessages(currentPage + 1);
@@ -271,44 +284,82 @@ const DetailPage: React.FC = () => {
                 <div className="goods-content">
                     <div className="goods-images">
                         {goods.images && goods.images.length > 0 ? (
-                            <Image.PreviewGroup>
-                                {goods.images.map((img, idx) => (
+                            <>
+                                <div className="goods-image-wrapper">
                                     <Image
-                                        key={idx}
-                                        src={img}
+                                        src={goods.images[currentImageIndex]}
                                         alt={goods.title}
                                         className="goods-image"
+                                        preview={true}
                                     />
-                                ))}
-                            </Image.PreviewGroup>
+                                </div>
+                                {goods.images.length > 1 && (
+                                    <div className="goods-thumbnails">
+                                        {goods.images.map((img, idx) => (
+                                            <img
+                                                key={idx}
+                                                src={img}
+                                                alt={`${goods.title} ${idx + 1}`}
+                                                className={`goods-thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
+                                                onClick={() => setCurrentImageIndex(idx)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="goods-image-placeholder">暂无图片</div>
                         )}
                     </div>
                     <div className="goods-info">
                         <h1 className="goods-title">{goods.title}</h1>
-                        <div className="goods-price">
-                            <span className="current-price">{formatPrice(goods.price)}</span>
-                            {goods.originalPrice > goods.price && (
-                                <span className="original-price">{formatPrice(goods.originalPrice)}</span>
-                            )}
+                        <div className="goods-price-row">
+                            <div className="goods-price">
+                                <span className="current-price">{formatPrice(goods.price)}</span>
+                                {goods.originalPrice > goods.price && (
+                                    <span className="original-price">{formatPrice(goods.originalPrice)}</span>
+                                )}
+                            </div>
+                            <div className="goods-actions">
+                                <Button
+                                    className={`collect-btn ${isCollected ? 'collected' : ''}`}
+                                    icon={isCollected ? <HeartFilled /> : <HeartOutlined />}
+                                    onClick={handleCollect}
+                                    loading={collectLoading}
+                                >
+                                    {isCollected ? '已收藏' : '收藏'}
+                                </Button>
+                            </div>
                         </div>
                         <div className="goods-meta">
-                            <span>分类: {goods.categoryName}</span>
-                            <span>浏览: {goods.viewCount}</span>
+                            <div className="goods-meta-item">
+                                <span className="category-tag">{goods.categoryName}</span>
+                            </div>
+                            <div className="goods-meta-item">
+                                <span>发布时间：{formatDate(goods.createdAt)}</span>
+                            </div>
+                            <div className="goods-meta-item">
+                                <EyeOutlined />
+                                <span className="stat-value">{goods.viewCount}</span>
+                                <span>人浏览</span>
+                            </div>
                         </div>
                         <div className="goods-seller">
-                            <Avatar icon={<UserOutlined />} src={getAvatarUrl(goods.sellerAvatar)} />
-                            <span className="seller-name">{goods.sellerName}</span>
-                        </div>
-                        <div className="goods-actions">
+                            <img
+                                src={getAvatarUrl(goods.sellerAvatar)}
+                                alt={goods.sellerName}
+                                className="seller-avatar"
+                            />
+                            <div className="seller-info">
+                                <span className="seller-name">{goods.sellerName}</span>
+                                <span className="seller-address">自提地点：校园内</span>
+                            </div>
                             <Button
-                                type={isCollected ? 'primary' : 'default'}
-                                icon={isCollected ? <StarFilled /> : <StarOutlined />}
-                                onClick={handleCollect}
-                                loading={collectLoading}
+                                type="primary"
+                                className="contact-seller-btn"
+                                onClick={() => message.info('请联系卖家沟通交易详情')}
                             >
-                                {isCollected ? '已收藏' : '收藏'}
+                                联系卖家
                             </Button>
                         </div>
                         <div className="goods-description">
@@ -319,8 +370,19 @@ const DetailPage: React.FC = () => {
                 </div>
             </Card>
 
+            {/* 移动端底部固定按钮 */}
+            <div className="mobile-action-bar">
+                <Button
+                    type="primary"
+                    className="mobile-want-btn"
+                    onClick={() => message.info('请联系卖家沟通交易详情')}
+                >
+                    我想要
+                </Button>
+            </div>
+
             {/* 留言区 */}
-            <Card className="message-card" title={`留言区 (${messageTotal})`}>
+            <Card className="message-card" title={`留言区 · ${messageTotal}`}>
                 {/* 留言输入框 */}
                 {isLoggedIn ? (
                     <div className="message-input">

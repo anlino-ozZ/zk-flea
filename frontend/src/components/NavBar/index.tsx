@@ -168,7 +168,7 @@ const NavBar: React.FC = () => {
         placement="right"
         onClose={() => setMobileMenuVisible(false)}
         open={mobileMenuVisible}
-        width={280}
+        size="default"
         className="navbar-drawer"
       >
         {/* 用户信息区域 */}

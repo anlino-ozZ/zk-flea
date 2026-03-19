@@ -30,6 +30,15 @@ const getAvatarUrl = (avatar: string): string => {
   return API_PROXY + avatar;
 };
 
+// 处理商品图片URL
+const getGoodsImageUrl = (image: string): string => {
+  if (!image) return 'https://via.placeholder.com/400x400';
+  if (image.startsWith('http://') || image.startsWith('https://')) {
+    return image;
+  }
+  return API_PROXY + image;
+};
+
 const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showCollect = true }) => {
   const navigate = useNavigate();
   const [isCollected, setIsCollected] = useState<boolean>(goods.isCollected || false);
@@ -90,27 +99,31 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
     setDebounceTimer(timer);
   }, [goods.id, isCollected, debounceTimer, onCollectChange]);
 
+  // 获取第一张图片（去重）
+  const rawImages = goods.images || [];
+  const imageList = Array.isArray(rawImages) ? [...new Set(rawImages)] : [];
+  const mainImage = imageList.length > 0 
+    ? getGoodsImageUrl(imageList[0]) 
+    : 'https://via.placeholder.com/400x400';
+
   return (
-    <Card
-      hoverable
-      className="goods-card"
-      onClick={handleClick}
-      cover={
+    <div className="goods-card-wrapper" onClick={handleClick}>
+      <div className="goods-card">
+        {/* 图片区域 */}
         <div className="goods-image-container">
           <img
+            src={mainImage}
             alt={goods.title}
-            src={goods.images[0] || 'https://via.placeholder.com/400x400'}
             className="goods-image"
           />
-          <Tag color="green" className="goods-status-tag">
+          <Tag className="goods-category-tag">
             {goods.categoryName}
           </Tag>
           {showCollect && (
             <Button
-              type="primary"
-              shape="circle"
+              type="text"
               className={`collect-btn ${isCollected ? 'collected' : ''}`}
-              icon={isCollected ? <HeartFilled style={{ color: '#52c41a' }} /> : <HeartOutlined />}
+              icon={isCollected ? <HeartFilled /> : <HeartOutlined />}
               onClick={(e) => {
                 e.stopPropagation();
                 handleCollect();
@@ -119,37 +132,35 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
             />
           )}
         </div>
-      }
-    >
-      <Card.Meta
-        title={<div className="goods-title">{goods.title}</div>}
-        description={
-          <div className="goods-info">
-            <div className="goods-price">
-              <span className="current-price">{formatPrice(goods.price)}</span>
+
+        {/* 内容区域 */}
+        <div className="goods-card-content">
+          <div className="goods-title">{goods.title}</div>
+          
+          <div className="goods-price-row">
+            <span className="current-price">{formatPrice(goods.price)}</span>
+            {goods.originalPrice > goods.price && (
               <span className="original-price">{formatPrice(goods.originalPrice)}</span>
+            )}
+          </div>
+
+          <div className="goods-seller-row">
+            <div className="seller-info">
+              <img
+                src={getAvatarUrl(goods.sellerAvatar)}
+                alt={goods.sellerName}
+                className="seller-avatar"
+              />
+              <span className="seller-name">{goods.sellerName}</span>
             </div>
-            <div className="goods-description">{goods.description}</div>
-            <div className="goods-meta">
-              <span className="seller">
-                <img
-                  src={getAvatarUrl(goods.sellerAvatar)}
-                  alt={goods.sellerName}
-                  className="seller-avatar"
-                />
-                <span>{goods.sellerName}</span>
-              </span>
-              <span className="stats">
-                <EyeOutlined /> {goods.viewCount}
-                <span style={{ marginLeft: 8 }}>
-                  {isCollected ? <HeartFilled style={{ color: '#52c41a' }} /> : <HeartOutlined />} {goods.favoriteCount}
-                </span>
-              </span>
+            <div className="goods-stats">
+              <EyeOutlined />
+              <span className="stat-num">{goods.viewCount}</span>
             </div>
           </div>
-        }
-      />
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 

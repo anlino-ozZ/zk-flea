@@ -173,7 +173,7 @@ const GoodsListPage: React.FC = () => {
           placement="left"
           onClose={() => setFilterDrawerVisible(false)}
           open={filterDrawerVisible}
-          width={280}
+          size="default"
         >
           {filterContent}
         </Drawer>
