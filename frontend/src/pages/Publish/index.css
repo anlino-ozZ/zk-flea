@@ -1,13 +1,177 @@
+/**
+ * 发布商品页面样式 - 绿色主题
+ */
+
+/* 容器 */
 .publish-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 24px;
 }
 
+/* 卡片 */
 .publish-card {
+    border-radius: 12px;
+    border: 1px solid #e8f4e0;
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.06);
+}
+
+.publish-card .ant-card-head {
+    background: #f8fff5;
+    border-bottom: 1px solid #e8f4e0;
+    border-radius: 12px 12px 0 0;
+}
+
+.publish-card .ant-card-head-title {
+    color: #389e0d;
+    font-weight: 600;
+}
+
+/* 布局 - PC端左右分栏 */
+.publish-content {
+    display: flex;
+    gap: 32px;
+}
+
+.publish-form-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.publish-preview-section {
+    flex: 0 0 400px;
+    position: sticky;
+    top: 24px;
+    align-self: flex-start;
+}
+
+/* 预览卡片 */
+.preview-card {
+    border: 1px solid #e8f4e0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.preview-card .ant-card-head {
+    background: #f8fff5;
+    border-bottom: 1px solid #e8f4e0;
+}
+
+.preview-card .ant-card-head-title {
+    color: #389e0d;
+    font-weight: 600;
+}
+
+/* 预览内容 */
+.preview-content {
+    padding: 16px;
+}
+
+.preview-image {
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+    background: #f8fff5;
+    border-radius: 8px;
+    border: 1px solid #e8f4e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    margin-bottom: 16px;
+}
+
+.preview-image img {
+    max-width: 100%;
+    max-height: 100%;
     border-radius: 8px;
 }
 
+.preview-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.preview-price {
+    margin-bottom: 12px;
+}
+
+.preview-current-price {
+    font-size: 24px;
+    color: #f5222d;
+    font-weight: bold;
+}
+
+.preview-original-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 8px;
+}
+
+.preview-description {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    max-height: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 表单项 */
+.publish-form-section .ant-form-item-label > label {
+    color: #333;
+    font-weight: 500;
+}
+
+.publish-form-section .ant-input,
+.publish-form-section .ant-input-number,
+.publish-form-section .ant-select:not(.ant-select-disabled) .ant-select-selector {
+    border-color: #e8f4e0 !important;
+    border-radius: 8px !important;
+    transition: all 0.3s;
+}
+
+.publish-form-section .ant-input:hover,
+.publish-form-section .ant-input-number:hover,
+.publish-form-section .ant-select:not(.ant-select-disabled) .ant-select-selector:hover {
+    border-color: #52c41a !important;
+}
+
+.publish-form-section .ant-input:focus,
+.publish-form-section .ant-input-focused,
+.publish-form-section .ant-input-number:focus,
+.publish-form-section .ant-input-number-focused,
+.publish-form-section .ant-select-focused .ant-select-selector {
+    border-color: #52c41a !important;
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15) !important;
+}
+
+.publish-form-section .ant-input::placeholder {
+    color: #999 !important;
+}
+
+.publish-form-section .ant-select-selection-placeholder {
+    color: #999 !important;
+}
+
+/* 价格输入框 */
+.price-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.price-suffix {
+    color: #666;
+    font-size: 14px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+/* 图片上传区域 */
 .image-list {
     display: flex;
     flex-wrap: wrap;
@@ -18,7 +182,7 @@
     position: relative;
     width: 100px;
     height: 100px;
-    border: 1px solid #d9d9d9;
+    border: 1px solid #e8f4e0;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -33,6 +197,42 @@
     position: absolute;
     bottom: 0;
     width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: #fff;
+}
+
+.image-item .ant-btn:hover {
+    background: rgba(245, 34, 45, 0.8);
+}
+
+.image-upload-btn {
+    width: 100px;
+    height: 100px;
+    border: 1px dashed #52c41a !important;
+    border-radius: 8px !important;
+    background: #f8fff5 !important;
+    color: #52c41a !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.image-upload-btn:hover {
+    background: #e8f4e0 !important;
+    border-color: #389e0d !important;
+}
+
+.image-upload-btn .anticon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.image-upload-btn span {
+    font-size: 12px;
 }
 
 .image-tip {
@@ -41,9 +241,77 @@
     margin-top: 8px;
 }
 
-/* 响应式 */
+/* 描述文本框 */
+.publish-form-section textarea.ant-input {
+    border-color: #e8f4e0 !important;
+    border-radius: 8px !important;
+}
+
+.publish-form-section textarea.ant-input:focus {
+    border-color: #52c41a !important;
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15) !important;
+}
+
+/* 提交按钮 */
+.submit-btn {
+    width: 100%;
+    height: 48px !important;
+    background: #52c41a !important;
+    border-color: #52c41a !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    margin-top: 16px;
+    transition: all 0.3s;
+}
+
+.submit-btn:hover {
+    background: #389e0d !important;
+    border-color: #389e0d !important;
+}
+
+.submit-btn:disabled {
+    background: #a7d967 !important;
+    border-color: #a7d967 !important;
+}
+
+/* 响应式 - 移动端 */
+@media (max-width: 992px) {
+    .publish-content {
+        flex-direction: column;
+    }
+
+    .publish-preview-section {
+        flex: none;
+        width: 100%;
+        position: static;
+        order: -1;
+        margin-bottom: 24px;
+    }
+
+    .preview-image {
+        height: 200px;
+    }
+}
+
 @media (max-width: 576px) {
     .publish-container {
         padding: 12px;
+    }
+
+    .publish-card .ant-card-body {
+        padding: 16px;
+    }
+
+    .preview-card {
+        margin-bottom: 16px;
+    }
+
+    .preview-title {
+        font-size: 16px;
+    }
+
+    .preview-current-price {
+        font-size: 20px;
     }
 }

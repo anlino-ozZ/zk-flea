@@ -70,6 +70,24 @@ export async function getCollectList(): Promise<ApiResponse<Goods[]>> {
 }
 
 /**
+ * 获取我的发布列表
+ * @returns Promise
+ */
+export async function getMyGoods(): Promise<ApiResponse<{ list: Goods[]; total: number }>> {
+  const response = await request.get<ApiResponse<{ list: Goods[]; total: number }>>('/api/publish/my');
+  return response.data;
+}
+
+/**
+ * 获取我的收藏列表
+ * @returns Promise
+ */
+export async function getMyCollect(): Promise<ApiResponse<{ list: Goods[]; total: number }>> {
+  const response = await request.get<ApiResponse<{ list: Goods[]; total: number }>>('/api/collect/list');
+  return response.data;
+}
+
+/**
  * 检查是否已收藏
  * @param goodsId - 商品ID
  * @returns Promise
@@ -86,5 +104,7 @@ export default {
   addCollect,
   removeCollect,
   getCollectList,
-  checkCollect
+  checkCollect,
+  getMyGoods,
+  getMyCollect
 };

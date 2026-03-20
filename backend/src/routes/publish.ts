@@ -4,12 +4,18 @@
  */
 
 import { Router } from 'express';
-import { publishGoodsHandler, updateGoodsHandler, deleteGoodsHandler } from '../controllers/publishController';
+import { publishGoodsHandler, updateGoodsHandler, deleteGoodsHandler, getMyGoodsHandler } from '../controllers/publishController';
 import { authMiddleware } from '../middlewares/auth';
 import { validate, schemas } from '../utils/validator';
 
 // 创建路由实例
 const router = Router();
+
+/**
+ * GET /api/goods/my
+ * 获取当前用户发布的商品列表 - 需要登录
+ */
+router.get('/my', authMiddleware, getMyGoodsHandler);
 
 /**
  * POST /api/goods/publish

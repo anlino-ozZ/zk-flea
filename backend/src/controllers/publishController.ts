@@ -262,8 +262,44 @@ export async function deleteGoodsHandler(
     }
 }
 
+/**
+ * 获取当前用户发布的商品列表
+ * GET /api/goods/my
+ */
+export async function getMyGoodsHandler(
+    req: AuthRequest,
+    res: Response
+): Promise<void> {
+    try {
+        const userId = req.user!.userId;
+
+        // 获取用户的商品列表
+        const goods = await Goods.findAll({
+            where: { sellerId: userId },
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            code: 200,
+            msg: '获取成功',
+            data: {
+                list: goods,
+                total: goods.length
+            }
+        } as ApiResponse);
+    } catch (error) {
+        console.error('获取我的商品列表失败:', error);
+        res.status(500).json({
+            code: 500,
+            msg: '服务器内部错误',
+            data: null
+        } as ApiResponse);
+    }
+}
+
 export default {
     publishGoodsHandler,
     updateGoodsHandler,
-    deleteGoodsHandler
+    deleteGoodsHandler,
+    getMyGoodsHandler
 };
