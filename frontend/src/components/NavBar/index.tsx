@@ -87,11 +87,6 @@ const NavBar: React.FC = () => {
       label: <Link to="/profile">个人中心</Link>,
     },
     {
-      key: 'collect',
-      icon: <HeartOutlined />,
-      label: <Link to="/collect">我的收藏</Link>,
-    },
-    {
       type: 'divider' as const,
     },
     {
@@ -217,11 +212,6 @@ const NavBar: React.FC = () => {
                 key: '/profile',
                 icon: <UserOutlined />,
                 label: <Link to="/profile" onClick={() => setMobileMenuVisible(false)}>个人中心</Link>,
-              },
-              {
-                key: '/collect',
-                icon: <HeartOutlined />,
-                label: <Link to="/collect" onClick={() => setMobileMenuVisible(false)}>我的收藏</Link>,
               },
               {
                 key: 'logout',

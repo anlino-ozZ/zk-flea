@@ -654,3 +654,453 @@ a {
 .bg-page { background-color: @bg-page; }
 .bg-content { background-color: @bg-content; }
 .bg-green-light { background-color: @primary-bg; }
+
+// ===================================
+// 加载动画绿色主题 - Spin Loading
+// ===================================
+.ant-spin {
+  .ant-spin-dot-item {
+    background-color: @primary-color;
+  }
+}
+
+.ant-spin-text {
+  color: @primary-color;
+}
+
+// ===================================
+// 按钮/卡片渐变hover效果 - Gradient Hover
+// ===================================
+.ant-btn {
+  transition: all 0.3s ease;
+
+  // 主按钮渐变hover
+  &-primary {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    &:hover::before {
+      left: 100%;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, @primary-dark 0%, @primary-color 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+    }
+  }
+
+  // 默认按钮渐变hover
+  &-default {
+    &:hover {
+      background: linear-gradient(135deg, @bg-hover 0%, @primary-bg 100%);
+      border-color: @primary-color;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: @primary-bg;
+      transform: translateY(0);
+    }
+  }
+
+  // 危险按钮hover
+  &-dangerous {
+    &:hover {
+      background: linear-gradient(135deg, #ff7875 0%, @error-color 100%);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// 卡片hover渐变效果
+.ant-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(82, 196, 26, 0.15);
+    border-color: @primary-light;
+  }
+}
+
+// ===================================
+// 图片懒加载骨架屏 - Image Lazy Load Skeleton
+// ===================================
+.ant-image {
+  &-placeholder {
+    background: #f8fff5;
+    min-height: 100px;
+  }
+}
+
+img.ant-image-img {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+img.ant-image-img[loading] {
+  opacity: 0;
+}
+
+img.ant-image-img:not([loading]) {
+  opacity: 1;
+}
+
+// 图片加载完成后放大效果
+.ant-image:hover img.ant-image-img {
+  transform: scale(1.02);
+}
+
+// ===================================
+// 响应式断点优化 - Responsive Breakpoints
+// ===================================
+
+// PC >= 1200px
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+}
+
+// 平板 768px - 1199px
+@media (max-width: 1199px) {
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+// 手机端 < 768px
+@media (max-width: 767px) {
+  // 汉堡菜单按钮绿色主题
+  .ant-menu-toggle {
+    .anticon {
+      color: @primary-color;
+    }
+  }
+
+  // 筛选栏折叠为浮层
+  .filter-panel-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f8fff5;
+    z-index: 1000;
+    padding: 16px;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    &.active {
+      transform: translateX(0);
+    }
+
+    .mobile-filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid @border-color;
+      margin-bottom: 16px;
+
+      .filter-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: @text-primary;
+      }
+    }
+
+    .mobile-filter-close {
+      font-size: 20px;
+      color: @text-secondary;
+      cursor: pointer;
+      padding: 4px;
+    }
+  }
+
+  // 移动端筛选按钮
+  .mobile-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: @primary-bg;
+    border: 1px solid @primary-light;
+    border-radius: 4px;
+    color: @primary-dark;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: @primary-color;
+      color: #fff;
+      border-color: @primary-color;
+    }
+
+    .anticon {
+      font-size: 14px;
+    }
+  }
+
+  // 隐藏PC端筛选
+  .desktop-filter {
+    display: none;
+  }
+}
+
+// ===================================
+// 滚动条绿色主题 - Green Scrollbar
+// ===================================
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fff5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a7d967;
+  border-radius: 4px;
+  transition: background 0.3s;
+
+  &:hover {
+    background: @primary-color;
+  }
+}
+
+// Firefox滚动条
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a7d967 #f8fff5;
+}
+
+// ===================================
+// 暗黑模式绿色系适配 - Dark Mode Green Theme
+// ===================================
+[data-theme='dark'],
+.ant-layout-dark {
+  // 暗黑模式变量覆盖
+  @dark-primary: #67c23a;
+  @dark-primary-light: #85ce61;
+  @dark-primary-dark: #5daf34;
+  @dark-bg: #141414;
+  @dark-bg-secondary: #1f1f1f;
+
+  // 文字色
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0a0;
+
+  // 背景色
+  body {
+    background-color: @dark-bg;
+    color: var(--text-primary);
+  }
+
+  // 卡片
+  .ant-card {
+    background: @dark-bg-secondary;
+    border-color: #303030;
+
+    &:hover {
+      border-color: @dark-primary-light;
+    }
+  }
+
+  // 按钮
+  .ant-btn-primary {
+    background: @dark-primary;
+    border-color: @dark-primary;
+
+    &:hover {
+      background: @dark-primary-light !important;
+      border-color: @dark-primary-light !important;
+    }
+  }
+
+  // 输入框
+  .ant-input,
+  .ant-input-affix-wrapper {
+    background: @dark-bg-secondary;
+    border-color: #303030;
+
+    &:hover,
+    &:focus {
+      border-color: @dark-primary !important;
+    }
+  }
+
+  // 菜单
+  .ant-menu {
+    background: @dark-bg-secondary;
+
+    .ant-menu-item-selected {
+      background: rgba(103, 194, 58, 0.2) !important;
+      color: @dark-primary !important;
+    }
+  }
+
+  // 加载动画
+  .ant-spin-dot-item {
+    background-color: @dark-primary;
+  }
+
+  // 滚动条
+  ::-webkit-scrollbar-track {
+    background: @dark-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3d5a3d;
+
+    &:hover {
+      background: @dark-primary-light;
+    }
+  }
+
+  * {
+    scrollbar-color: #3d5a3d @dark-bg;
+  }
+
+  // 骨架屏
+  .ant-image-placeholder {
+    background: @dark-bg-secondary;
+  }
+
+  // 链接
+  a {
+    color: @dark-primary;
+
+    &:hover {
+      color: @dark-primary-light;
+    }
+  }
+
+  // 成功提示
+  .ant-message-success .anticon {
+    color: @dark-primary;
+  }
+
+  // 错误提示
+  .ant-message-error .anticon {
+    color: #f5222d;
+  }
+
+  // 分页
+  .ant-pagination-item {
+    background: @dark-bg-secondary;
+    border-color: #303030;
+
+    a {
+      color: var(--text-secondary);
+    }
+
+    &-active {
+      background: @dark-primary;
+      border-color: @dark-primary;
+
+      a {
+        color: #fff;
+      }
+    }
+
+    &:hover {
+      border-color: @dark-primary;
+
+      a {
+        color: @dark-primary;
+      }
+    }
+  }
+}
+
+// ===================================
+// Message提示颜色自定义 - Message Theme
+// ===================================
+.ant-message {
+  .ant-message-notice-content {
+    .anticon-check-circle {
+      color: @success-color;
+    }
+
+    .anticon-close-circle {
+      color: @error-color;
+    }
+
+    .anticon-exclamation-circle {
+      color: @warning-color;
+    }
+
+    .anticon-info-circle {
+      color: @info-color;
+    }
+  }
+}
+
+// 成功状态绿色高亮
+.ant-message-success {
+  .ant-message-notice-content {
+    background: linear-gradient(135deg, rgba(82, 196, 26, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+    border-left: 3px solid @success-color;
+  }
+}
+
+// 失败状态红色高亮
+.ant-message-error {
+  .ant-message-notice-content {
+    background: linear-gradient(135deg, rgba(245, 34, 45, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+    border-left: 3px solid @error-color;
+  }
+}
+
+// ===================================
+// 骨架屏动画 - Skeleton Animation
+// ===================================
+.ant-skeleton {
+  .ant-skeleton-content {
+    .ant-skeleton-title,
+    .ant-skeleton-paragraph > li {
+      background: linear-gradient(90deg, #f8fff5 25%, #e8f4e0 50%, #f8fff5 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ===================================
+// Toast 加载进度条绿色主题
+// ===================================
+.ant-progress-bg {
+  background: linear-gradient(90deg, @primary-light 0%, @primary-color 100%);
+}
