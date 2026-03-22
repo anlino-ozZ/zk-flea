@@ -2,29 +2,53 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/db';
 import User from './User';
 
-// 复用你定义的商品状态枚举（和前端保持一致）
+/**
+ * 商品状态枚举
+ * 0: 在售 - 商品正常展示，可购买
+ * 1: 交易中 - 已有买家，正在交易流程中
+ * 2: 已售出 - 交易完成
+ * 3: 已下架 - 卖家主动下架
+ */
 export enum GoodsStatus {
-    DRAFT = 'draft',
-    PENDING = 'pending',
-    ON_SALE = 'on_sale',
-    SOLD = 'sold',
-    OFF_SHELF = 'off_shelf'
+    ON_SALE = 0,      // 在售
+    TRADING = 1,      // 交易中
+    SOLD = 2,         // 已售出
+    OFF_SHELF = 3     // 已下架
 }
 
-// 定义商品模型（完全对齐你的 Goods 接口）
+/**
+ * 商品新旧程度枚举
+ * 1: 全新 - 未使用
+ * 2: 几乎全新 - 使用过几次
+ * 3: 九成新
+ * 4: 八成新
+ * 5: 七成新及以下
+ */
+export enum GoodsCondition {
+    BRAND_NEW = 1,    // 全新
+    LIKE_NEW = 2,     // 几乎全新
+    LIKE_NEW_3 = 3,   // 九成新
+    LIKE_NEW_4 = 4,   // 八成新
+    LIKE_NEW_5 = 5    // 七成新及以下
+}
+
+// 定义商品模型
 class Goods extends Model {
     public id!: number;
     public title!: string;
     public description!: string;
     public price!: number;
     public originalPrice!: number;
-    public images!: string; // 数据库存JSON字符串，取出来转数组
+    public images!: string;
     public categoryId!: number;
     public categoryName!: string;
     public sellerId!: number;
     public sellerName!: string;
     public sellerAvatar!: string;
     public status!: GoodsStatus;
+    public condition!: GoodsCondition;
+    public pickupLocation!: string;
+    public isBook!: boolean;
     public viewCount!: number;
     public favoriteCount!: number;
     public readonly createdAt!: Date;
@@ -49,7 +73,7 @@ Goods.init(
             comment: '商品描述'
         },
         price: {
-            type: DataTypes.INTEGER, // 你用的是分单位（699900 = 6999元），用INT更合适
+            type: DataTypes.INTEGER,
             allowNull: false,
             comment: '售价（分）'
         },
@@ -62,7 +86,6 @@ Goods.init(
             type: DataTypes.TEXT,
             allowNull: false,
             comment: '商品图片地址（JSON字符串）',
-            // 自动把数组转JSON存，取出来转数组
             get() {
                 const value = this.getDataValue('images');
                 return value ? JSON.parse(value) : [];
@@ -98,10 +121,28 @@ Goods.init(
             comment: '卖家头像'
         },
         status: {
-            type: DataTypes.ENUM(...Object.values(GoodsStatus)),
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: GoodsStatus.ON_SALE,
-            comment: '商品状态'
+            comment: '商品状态: 0-在售, 1-交易中, 2-已售出, 3-已下架'
+        },
+        condition: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: GoodsCondition.LIKE_NEW_4,
+            comment: '新旧程度: 1-全新, 2-几乎全新, 3-九成新, 4-八成新, 5-七成新及以下'
+        },
+        pickupLocation: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            defaultValue: '',
+            comment: '自提地点'
+        },
+        isBook: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+            comment: '是否为图书'
         },
         viewCount: {
             type: DataTypes.INTEGER,
@@ -119,7 +160,7 @@ Goods.init(
     {
         sequelize,
         tableName: 'goods',
-        timestamps: true, // 自动生成createdAt/updatedAt
+        timestamps: true,
         underscored: true
     }
 );
@@ -127,5 +168,30 @@ Goods.init(
 // 关联用户表（一个用户可发布多个商品）
 User.hasMany(Goods, { foreignKey: 'sellerId', as: 'goods' });
 Goods.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' });
+
+// 导出类型
+export type GoodsAttributes = {
+    id: number;
+    title: string;
+    description: string;
+    price: number;
+    originalPrice: number;
+    images: string[];
+    categoryId: number;
+    categoryName: string;
+    sellerId: number;
+    sellerName: string;
+    sellerAvatar: string;
+    status: GoodsStatus;
+    condition: GoodsCondition;
+    pickupLocation: string;
+    isBook: boolean;
+    viewCount: number;
+    favoriteCount: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type GoodsCreationAttributes = Omit<GoodsAttributes, 'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'favoriteCount'>;
 
 export default Goods;

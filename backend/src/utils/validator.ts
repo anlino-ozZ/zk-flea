@@ -68,9 +68,11 @@ export const schemas = {
     pageSize: Joi.number().integer().min(1).max(100).default(10),
     keyword: Joi.string().allow(''),
     categoryId: Joi.number().integer().positive(),
-    status: Joi.string(),
+    status: Joi.number().integer().min(0).max(3),
     minPrice: Joi.number().positive(),
     maxPrice: Joi.number().positive(),
+    isBook: Joi.boolean(),
+    condition: Joi.number().integer().min(1).max(5),
     sortBy: Joi.string().valid('createdAt', 'price', 'viewCount'),
     sortOrder: Joi.string().valid('asc', 'desc')
   }),
@@ -85,7 +87,18 @@ export const schemas = {
     images: Joi.array().items(Joi.string()).min(1).required()
       .messages({ 'array.min': '请至少上传一张商品图片' }),
     categoryId: Joi.number().integer().positive().required(),
-    categoryName: Joi.string().required()
+    categoryName: Joi.string().required(),
+    condition: Joi.number().integer().min(1).max(5),
+    pickupLocation: Joi.string().max(255),
+    isBook: Joi.boolean(),
+    // 图书特有字段
+    isbn: Joi.string().max(20).allow(''),
+    author: Joi.string().max(100).allow(''),
+    publisher: Joi.string().max(100).allow(''),
+    publishYear: Joi.number().integer().min(1900).max(2030),
+    edition: Joi.string().max(50).allow(''),
+    language: Joi.string().max(20).allow(''),
+    pages: Joi.number().integer().positive()
   }),
 
   // 更新商品
@@ -97,7 +110,18 @@ export const schemas = {
     images: Joi.array().items(Joi.string()).min(1),
     categoryId: Joi.number().integer().positive(),
     categoryName: Joi.string(),
-    status: Joi.string()
+    status: Joi.number().integer().min(0).max(3),
+    condition: Joi.number().integer().min(1).max(5),
+    pickupLocation: Joi.string().max(255),
+    isBook: Joi.boolean(),
+    // 图书特有字段
+    isbn: Joi.string().max(20).allow(''),
+    author: Joi.string().max(100).allow(''),
+    publisher: Joi.string().max(100).allow(''),
+    publishYear: Joi.number().integer().min(1900).max(2030),
+    edition: Joi.string().max(50).allow(''),
+    language: Joi.string().max(20).allow(''),
+    pages: Joi.number().integer().positive()
   }),
 
   // 留言参数（POST 添加/回复）

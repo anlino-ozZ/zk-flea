@@ -4,6 +4,7 @@ import path from 'path';
 import './config/db';
 import './models/User';
 import './models/goods';
+import './models/BookInfo';
 import './models/Collect';
 import './models/Message';
 import goodsRouter from './routes/goods';

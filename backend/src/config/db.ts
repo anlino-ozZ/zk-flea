@@ -38,7 +38,8 @@ testDbConnection();
 
 // 同步模型到数据库（开发环境用，生产环境慎用）
 // force: false = 不删除已有表，只新增/修改；true = 清空表重建（慎用）
-sequelize.sync({ force: false }).then(() => {
+// alter: true = 自动修改表结构以匹配模型（开发环境推荐）
+sequelize.sync({ force: false, alter: true }).then(() => {
     console.log('✅ 数据库表同步完成！');
 });
 

@@ -4,16 +4,11 @@
  */
 
 import { Request, Response } from 'express';
-import Goods, { GoodsStatus } from '../models/goods';
+import Goods, { GoodsStatus, GoodsCondition } from '../models/goods';
+import BookInfo from '../models/BookInfo';
 import User from '../models/User';
 import { AuthRequest } from '../middlewares/auth';
-
-// 统一响应结构
-interface ApiResponse<T = unknown> {
-    code: number;
-    msg: string;
-    data: T;
-}
+import { success, error, successPage, sendBadRequest, sendNotFound, sendForbidden, sendServerError } from '../utils/response';
 
 // 辅助函数：解析 query 参数为数字
 function parseParamNumber(value: any, defaultValue: number): number {
@@ -32,6 +27,17 @@ interface PublishGoodsBody {
     images: string[];
     categoryId: number;
     categoryName: string;
+    condition?: GoodsCondition;
+    pickupLocation?: string;
+    isBook?: boolean;
+    // 图书特有字段
+    isbn?: string;
+    author?: string;
+    publisher?: string;
+    publishYear?: number;
+    edition?: string;
+    language?: string;
+    pages?: number;
 }
 
 /**
@@ -44,66 +50,45 @@ export async function publishGoodsHandler(
 ): Promise<void> {
     try {
         const userId = req.user!.userId;
-        console.log('publishGoodsHandler userId:', userId);
-        const { title, description, price, originalPrice, images, categoryId, categoryName } = req.body as PublishGoodsBody;
+        const { 
+            title, description, price, originalPrice, images, categoryId, categoryName,
+            condition, pickupLocation, isBook,
+            isbn, author, publisher, publishYear, edition, language, pages
+        } = req.body as PublishGoodsBody;
 
         // 参数验证
         if (!title || !description || !price || !originalPrice || !images || images.length === 0 || !categoryId || !categoryName) {
-            res.status(400).json({
-                code: 400,
-                msg: '请填写完整的商品信息',
-                data: null
-            } as ApiResponse);
+            sendBadRequest(res, '请填写完整的商品信息');
             return;
         }
 
         // 标题长度限制
         if (title.length > 100) {
-            res.status(400).json({
-                code: 400,
-                msg: '商品标题不能超过100字',
-                data: null
-            } as ApiResponse);
+            sendBadRequest(res, '商品标题不能超过100字');
             return;
         }
 
         // 描述长度限制
         if (description.length > 2000) {
-            res.status(400).json({
-                code: 400,
-                msg: '商品描述不能超过2000字',
-                data: null
-            } as ApiResponse);
+            sendBadRequest(res, '商品描述不能超过2000字');
             return;
         }
 
         // 价格验证
         if (price < 0 || originalPrice < 0) {
-            res.status(400).json({
-                code: 400,
-                msg: '价格不能为负数',
-                data: null
-            } as ApiResponse);
+            sendBadRequest(res, '价格不能为负数');
             return;
         }
 
         // 获取用户信息
         let user = await User.findByPk(userId);
-        console.log('Found user:', user ? { id: user.id, username: user.username } : null);
-        console.log('User tableName:', User.tableName);
         if (!user) {
             // 尝试直接用 SQL 查询
             const [results]: any = await (User as any).sequelize.query(`SELECT * FROM users WHERE id = ${userId}`);
-            console.log('Direct SQL results:', results);
             if (!results || results.length === 0) {
-                res.status(404).json({
-                    code: 404,
-                    msg: '用户不存在',
-                    data: null
-                } as ApiResponse);
+                sendNotFound(res, '用户不存在');
                 return;
             }
-            // 手动构造用户对象
             user = {
                 id: results[0].id,
                 username: results[0].username,
@@ -111,43 +96,48 @@ export async function publishGoodsHandler(
             } as any;
         }
 
-        // 提取用户信息，避免后续可能的null类型问题
-        const sellerName = user!.username;
-        const sellerAvatar = user!.avatar || '';
-
         // 创建商品
         const goods = await Goods.create({
             title: title.trim(),
             description: description.trim(),
-            price: Math.round(price), // 转为分
+            price: Math.round(price),
             originalPrice: Math.round(originalPrice),
             images,
             categoryId,
             categoryName,
             sellerId: userId,
-            sellerName: sellerName,
-            sellerAvatar: sellerAvatar,
+            sellerName: user!.username,
+            sellerAvatar: user!.avatar || '',
             status: GoodsStatus.ON_SALE,
+            condition: condition || GoodsCondition.LIKE_NEW_4,
+            pickupLocation: pickupLocation || '',
+            isBook: isBook || false,
             viewCount: 0,
             favoriteCount: 0
         });
 
-        res.status(200).json({
-            code: 200,
-            msg: '商品发布成功',
-            data: {
-                id: goods.id,
-                title: goods.title,
-                status: goods.status
-            }
-        } as ApiResponse);
-    } catch (error) {
-        console.error('发布商品失败:', error);
-        res.status(500).json({
-            code: 500,
-            msg: '服务器内部错误',
-            data: null
-        } as ApiResponse);
+        // 如果是图书，创建图书信息
+        if (isBook) {
+            await BookInfo.create({
+                goodsId: goods.id,
+                isbn: isbn || '',
+                author: author || '',
+                publisher: publisher || '',
+                publishYear: publishYear || 0,
+                edition: edition || '',
+                language: language || '中文',
+                pages: pages || 0
+            });
+        }
+
+        res.status(200).json(success({
+            id: goods.id,
+            title: goods.title,
+            status: goods.status
+        }, '商品发布成功'));
+    } catch (err) {
+        console.error('发布商品失败:', err);
+        sendServerError(res, '服务器内部错误');
     }
 }
 
@@ -162,26 +152,24 @@ export async function updateGoodsHandler(
     try {
         const userId = req.user!.userId;
         const goodsId = parseParamNumber(req.params.id, 0);
-        const { title, description, price, originalPrice, images, categoryId, categoryName, status } = req.body as Partial<PublishGoodsBody & { status: GoodsStatus }>;
+        const { 
+            title, description, price, originalPrice, images, categoryId, categoryName, status,
+            condition, pickupLocation, isBook,
+            isbn, author, publisher, publishYear, edition, language, pages
+        } = req.body as Partial<PublishGoodsBody & { status: GoodsStatus }>;
 
         // 查找商品
-        const goods = await Goods.findByPk(goodsId);
+        const goods = await Goods.findByPk(goodsId, {
+            include: [{ model: BookInfo, as: 'bookInfo' }]
+        });
         if (!goods) {
-            res.status(404).json({
-                code: 404,
-                msg: '商品不存在',
-                data: null
-            } as ApiResponse);
+            sendNotFound(res, '商品不存在');
             return;
         }
 
         // 检查是否为商品所有者
         if (goods.sellerId !== userId) {
-            res.status(403).json({
-                code: 403,
-                msg: '无权限修改此商品',
-                data: null
-            } as ApiResponse);
+            sendForbidden(res, '无权限修改此商品');
             return;
         }
 
@@ -194,21 +182,43 @@ export async function updateGoodsHandler(
         if (categoryId) goods.categoryId = categoryId;
         if (categoryName) goods.categoryName = categoryName;
         if (status) goods.status = status;
+        if (condition) goods.condition = condition;
+        if (pickupLocation !== undefined) goods.pickupLocation = pickupLocation;
+        if (isBook !== undefined) goods.isBook = isBook;
 
         await goods.save();
 
-        res.status(200).json({
-            code: 200,
-            msg: '商品更新成功',
-            data: null
-        } as ApiResponse);
-    } catch (error) {
-        console.error('更新商品失败:', error);
-        res.status(500).json({
-            code: 500,
-            msg: '服务器内部错误',
-            data: null
-        } as ApiResponse);
+        // 更新图书信息
+        if (isBook) {
+            const bookInfo = await BookInfo.findOne({ where: { goodsId } });
+            if (bookInfo) {
+                if (isbn !== undefined) bookInfo.isbn = isbn;
+                if (author !== undefined) bookInfo.author = author;
+                if (publisher !== undefined) bookInfo.publisher = publisher;
+                if (publishYear !== undefined) bookInfo.publishYear = publishYear;
+                if (edition !== undefined) bookInfo.edition = edition;
+                if (language !== undefined) bookInfo.language = language;
+                if (pages !== undefined) bookInfo.pages = pages;
+                await bookInfo.save();
+            } else {
+                // 创建新的图书信息
+                await BookInfo.create({
+                    goodsId,
+                    isbn: isbn || '',
+                    author: author || '',
+                    publisher: publisher || '',
+                    publishYear: publishYear || 0,
+                    edition: edition || '',
+                    language: language || '中文',
+                    pages: pages || 0
+                });
+            }
+        }
+
+        res.status(200).json(success(null, '商品更新成功'));
+    } catch (err) {
+        console.error('更新商品失败:', err);
+        sendServerError(res, '服务器内部错误');
     }
 }
 
@@ -227,38 +237,25 @@ export async function deleteGoodsHandler(
         // 查找商品
         const goods = await Goods.findByPk(goodsId);
         if (!goods) {
-            res.status(404).json({
-                code: 404,
-                msg: '商品不存在',
-                data: null
-            } as ApiResponse);
+            sendNotFound(res, '商品不存在');
             return;
         }
 
         // 检查是否为商品所有者
         if (goods.sellerId !== userId) {
-            res.status(403).json({
-                code: 403,
-                msg: '无权限删除此商品',
-                data: null
-            } as ApiResponse);
+            sendForbidden(res, '无权限删除此商品');
             return;
         }
 
+        // 删除关联的图书信息
+        await BookInfo.destroy({ where: { goodsId } });
+        
         await goods.destroy();
 
-        res.status(200).json({
-            code: 200,
-            msg: '商品删除成功',
-            data: null
-        } as ApiResponse);
-    } catch (error) {
-        console.error('删除商品失败:', error);
-        res.status(500).json({
-            code: 500,
-            msg: '服务器内部错误',
-            data: null
-        } as ApiResponse);
+        res.status(200).json(success(null, '商品删除成功'));
+    } catch (err) {
+        console.error('删除商品失败:', err);
+        sendServerError(res, '服务器内部错误');
     }
 }
 
@@ -272,28 +269,44 @@ export async function getMyGoodsHandler(
 ): Promise<void> {
     try {
         const userId = req.user!.userId;
+        const page = parseInt(req.query.page as string, 10) || 1;
+        const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
 
         // 获取用户的商品列表
-        const goods = await Goods.findAll({
+        const { count, rows } = await Goods.findAndCountAll({
             where: { sellerId: userId },
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            limit: pageSize,
+            offset: (page - 1) * pageSize
         });
 
-        res.status(200).json({
-            code: 200,
-            msg: '获取成功',
-            data: {
-                list: goods,
-                total: goods.length
-            }
-        } as ApiResponse);
-    } catch (error) {
-        console.error('获取我的商品列表失败:', error);
-        res.status(500).json({
-            code: 500,
-            msg: '服务器内部错误',
-            data: null
-        } as ApiResponse);
+        // 格式化返回数据
+        const list = rows.map(goods => ({
+            id: goods.id,
+            title: goods.title,
+            description: goods.description,
+            price: goods.price,
+            originalPrice: goods.originalPrice,
+            images: (goods as any).images,
+            categoryId: goods.categoryId,
+            categoryName: goods.categoryName,
+            sellerId: goods.sellerId,
+            sellerName: goods.sellerName,
+            sellerAvatar: goods.sellerAvatar,
+            status: goods.status,
+            condition: goods.condition,
+            pickupLocation: goods.pickupLocation,
+            isBook: goods.isBook,
+            viewCount: goods.viewCount,
+            favoriteCount: goods.favoriteCount,
+            createdAt: goods.createdAt.toISOString(),
+            updatedAt: goods.updatedAt.toISOString()
+        }));
+
+        res.status(200).json(successPage(list, count, page, pageSize, '获取成功'));
+    } catch (err) {
+        console.error('获取我的商品列表失败:', err);
+        sendServerError(res, '服务器内部错误');
     }
 }
 

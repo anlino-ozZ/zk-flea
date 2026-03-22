@@ -4,7 +4,7 @@
  */
 
 import request from '../utils/request';
-import type { ApiResponse } from '../types/goods';
+import type { ApiResponse, GoodsStatus, GoodsCondition } from '../types/goods';
 
 // 发布商品参数
 export interface PublishGoodsParams {
@@ -15,11 +15,22 @@ export interface PublishGoodsParams {
     images: string[];
     categoryId: number;
     categoryName: string;
+    condition?: GoodsCondition;
+    pickupLocation?: string;
+    isBook?: boolean;
+    // 图书特有字段
+    isbn?: string;
+    author?: string;
+    publisher?: string;
+    publishYear?: number;
+    edition?: string;
+    language?: string;
+    pages?: number;
 }
 
 // 更新商品参数
 export interface UpdateGoodsParams extends Partial<PublishGoodsParams> {
-    status?: string;
+    status?: GoodsStatus;
 }
 
 /**

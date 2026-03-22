@@ -3,16 +3,22 @@
  * 用于前后端数据交互的 TypeScript 类型约束
  */
 
-// 商品状态
-export const GoodsStatus = {
-  DRAFT: 'draft',
-  PENDING: 'pending',
-  ON_SALE: 'on_sale',
-  SOLD: 'sold',
-  OFF_SHELF: 'off_shelf',
-} as const;
+// 商品状态（数字枚举，与后端保持一致）
+export enum GoodsStatus {
+  ON_SALE = 0,     // 在售
+  TRADING = 1,     // 交易中
+  SOLD = 2,        // 已售出
+  OFF_SHELF = 3    // 已下架
+}
 
-export type GoodsStatus = typeof GoodsStatus[keyof typeof GoodsStatus];
+// 商品新旧程度
+export enum GoodsCondition {
+  BRAND_NEW = 1,   // 全新
+  LIKE_NEW = 2,    // 几乎全新
+  LIKE_NEW_3 = 3,  // 九成新
+  LIKE_NEW_4 = 4,  // 八成新
+  LIKE_NEW_5 = 5   // 七成新及以下
+}
 
 // 商品实体类型
 export interface Goods {
@@ -27,12 +33,25 @@ export interface Goods {
   sellerId: number;     // 卖家ID
   sellerName: string;   // 卖家昵称
   sellerAvatar: string; // 卖家头像
-  status: GoodsStatus;  // 商品状态
+  status: GoodsStatus;  // 商品状态 (0-在售,1-交易中,2-已售出,3-已下架)
+  condition: GoodsCondition; // 新旧程度 (1-5)
+  pickupLocation: string; // 自提地点
+  isBook: boolean;      // 是否为图书
   viewCount: number;    // 浏览次数
   favoriteCount: number; // 收藏次数
   createdAt: string;    // 创建时间（ISO字符串）
   updatedAt: string;   // 更新时间（ISO字符串）
   isCollected?: boolean; // 当前用户是否已收藏
+  // 图书特有信息（当isBook为true时）
+  bookInfo?: {
+    isbn: string;
+    author: string;
+    publisher: string;
+    publishYear: number;
+    edition: string;
+    language: string;
+    pages: number;
+  };
 }
 
 // 分页请求参数
@@ -44,6 +63,8 @@ export interface GoodsListParams {
   status?: GoodsStatus; // 商品状态筛选（可选）
   minPrice?: number;    // 最低价格筛选（可选）
   maxPrice?: number;    // 最高价格筛选（可选）
+  isBook?: boolean;     // 是否为图书筛选（可选）
+  condition?: GoodsCondition; // 新旧程度筛选（可选）
   sortBy?: 'createdAt' | 'price' | 'viewCount'; // 排序字段
   sortOrder?: 'asc' | 'desc'; // 排序方向
 }

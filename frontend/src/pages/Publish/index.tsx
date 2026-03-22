@@ -5,15 +5,25 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, InputNumber, Select, Button, Card, message, Row, Col } from 'antd';
+import { Form, Input, InputNumber, Select, Button, Card, message, Row, Col, Switch } from 'antd';
 import { PlusOutlined, PictureOutlined } from '@ant-design/icons';
 import { publishGoods } from '../../api/publish';
 import type { PublishGoodsParams } from '../../api/publish';
 import { getToken } from '../../api/user';
+import { GoodsCondition } from '../../types/goods';
 import './index.css';
 
 const { Option } = Select;
 const { TextArea } = Input;
+
+// 新旧程度选项
+const conditionOptions = [
+    { value: GoodsCondition.BRAND_NEW, label: '全新' },
+    { value: GoodsCondition.LIKE_NEW, label: '几乎全新' },
+    { value: GoodsCondition.LIKE_NEW_3, label: '九成新' },
+    { value: GoodsCondition.LIKE_NEW_4, label: '八成新' },
+    { value: GoodsCondition.LIKE_NEW_5, label: '七成新及以下' }
+];
 
 // 分类选项
 const categories = [
@@ -32,6 +42,7 @@ const PublishPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
     const [formValues, setFormValues] = useState<any>({});
+    const [isBook, setIsBook] = useState(false);
 
     // 检查登录
     const token = getToken();
@@ -51,8 +62,22 @@ const PublishPage: React.FC = () => {
                 originalPrice: Math.round(values.originalPrice * 100),
                 images: imageUrls,
                 categoryId: values.categoryId,
-                categoryName: categories.find(c => c.id === values.categoryId)?.name || ''
+                categoryName: categories.find(c => c.id === values.categoryId)?.name || '',
+                condition: values.condition || GoodsCondition.LIKE_NEW_4,
+                pickupLocation: values.pickupLocation || '',
+                isBook: isBook
             };
+
+            // 如果是图书，添加图书特有字段
+            if (isBook) {
+                params.isbn = values.isbn || '';
+                params.author = values.author || '';
+                params.publisher = values.publisher || '';
+                params.publishYear = values.publishYear || 0;
+                params.edition = values.edition || '';
+                params.language = values.language || '中文';
+                params.pages = values.pages || 0;
+            }
 
             const res = await publishGoods(params);
             if (res.code === 200) {
@@ -205,6 +230,103 @@ const PublishPage: React.FC = () => {
                                     点击添加图片按钮输入图片链接，支持多张图片
                                 </div>
                             </Form.Item>
+
+                            {/* 新旧程度和自提地点 */}
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="condition"
+                                        label="新旧程度"
+                                    >
+                                        <Select placeholder="请选择新旧程度" allowClear>
+                                            {conditionOptions.map(opt => (
+                                                <Option key={opt.value} value={opt.value}>{opt.label}</Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="pickupLocation"
+                                        label="自提地点"
+                                    >
+                                        <Input placeholder="请输入自提地点" maxLength={255} />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            {/* 是否为图书 */}
+                            <Form.Item label="是否为图书">
+                                <Switch
+                                    checked={isBook}
+                                    onChange={(checked) => setIsBook(checked)}
+                                    checkedChildren="是"
+                                    unCheckedChildren="否"
+                                />
+                                <span style={{ marginLeft: 8, color: '#666' }}>
+                                    {isBook ? '将显示图书相关信息' : '普通商品'}
+                                </span>
+                            </Form.Item>
+
+                            {/* 图书特有字段 */}
+                            {isBook && (
+                                <div className="book-fields" style={{ padding: '16px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px' }}>
+                                    <Row gutter={16}>
+                                        <Col span={12}>
+                                            <Form.Item name="isbn" label="ISBN">
+                                                <Input placeholder="请输入ISBN" maxLength={20} />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item name="author" label="作者">
+                                                <Input placeholder="请输入作者" maxLength={100} />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Row gutter={16}>
+                                        <Col span={12}>
+                                            <Form.Item name="publisher" label="出版社">
+                                                <Input placeholder="请输入出版社" maxLength={100} />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item name="publishYear" label="出版年份">
+                                                <InputNumber
+                                                    placeholder="如: 2024"
+                                                    style={{ width: '100%' }}
+                                                    min={1900}
+                                                    max={2030}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Row gutter={16}>
+                                        <Col span={8}>
+                                            <Form.Item name="edition" label="版次">
+                                                <Input placeholder="如: 第1版" maxLength={50} />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={8}>
+                                            <Form.Item name="language" label="语言">
+                                                <Select placeholder="请选择语言" allowClear>
+                                                    <Option value="中文">中文</Option>
+                                                    <Option value="英文">英文</Option>
+                                                    <Option value="其他">其他</Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={8}>
+                                            <Form.Item name="pages" label="页数">
+                                                <InputNumber
+                                                    placeholder="请输入页数"
+                                                    style={{ width: '100%' }}
+                                                    min={1}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            )}
 
                             {/* 商品描述 */}
                             <Form.Item
