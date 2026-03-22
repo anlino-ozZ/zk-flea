@@ -5,12 +5,21 @@
 
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Tag, Button, message } from 'antd';
-import { EyeOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
-import type { Goods } from '../../types/goods';
+import { Button, message } from 'antd';
+import { EyeOutlined, HeartOutlined, HeartFilled, EnvironmentOutlined, BookOutlined } from '@ant-design/icons';
+import type { Goods, GoodsCondition } from '../../types/goods';
 import { formatPrice, addCollect, removeCollect } from '../../api/goods';
 import { getToken } from '../../api/user';
 import './index.css';
+
+// 新旧程度标签配置
+const conditionLabels: Record<number, string> = {
+  1: '全新',
+  2: '几乎全新',
+  3: '九成新',
+  4: '八成新',
+  5: '七成新'
+};
 
 interface GoodsCardProps {
   goods: Goods;
@@ -106,6 +115,14 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
     ? getGoodsImageUrl(imageList[0]) 
     : 'https://via.placeholder.com/400x400';
 
+  // 获取新旧程度标签
+  const conditionLabel = goods.condition ? conditionLabels[goods.condition] || '八成新' : '八成新';
+  
+  // 获取自提地点（截取前15个字符）
+  const pickupLocationText = goods.pickupLocation?.length > 15 
+    ? goods.pickupLocation.substring(0, 15) + '...' 
+    : goods.pickupLocation || '';
+
   return (
     <div className="goods-card-wrapper" onClick={handleClick}>
       <div className="goods-card">
@@ -116,9 +133,17 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
             alt={goods.title}
             className="goods-image"
           />
-          <Tag className="goods-category-tag">
+          {/* 图书标识 */}
+          {goods.isBook && (
+            <span className="is-book-badge">
+              <BookOutlined style={{ marginRight: 4 }} />
+              图书
+            </span>
+          )}
+          {/* 分类标签 */}
+          <span className="goods-category-tag">
             {goods.categoryName}
-          </Tag>
+          </span>
           {showCollect && (
             <Button
               type="text"
@@ -135,7 +160,7 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
 
         {/* 内容区域 */}
         <div className="goods-card-content">
-          <div className="goods-title">{goods.title}</div>
+          <div className="goods-title" title={goods.title}>{goods.title}</div>
           
           <div className="goods-price-row">
             <span className="current-price">{formatPrice(goods.price)}</span>
@@ -143,6 +168,22 @@ const GoodsCard: React.FC<GoodsCardProps> = ({ goods, onCollectChange, showColle
               <span className="original-price">{formatPrice(goods.originalPrice)}</span>
             )}
           </div>
+
+          {/* 标签行 */}
+          <div className="goods-tags-row">
+            <span className="condition-tag">{conditionLabel}</span>
+            {goods.isBook && goods.bookInfo && (
+              <span className="book-tag">{goods.bookInfo.author || '图书'}</span>
+            )}
+          </div>
+
+          {/* 自提地点 */}
+          {pickupLocationText && (
+            <div className="pickup-location">
+              <EnvironmentOutlined />
+              <span>{pickupLocationText}</span>
+            </div>
+          )}
 
           <div className="goods-seller-row">
             <div className="seller-info">

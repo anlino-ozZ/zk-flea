@@ -1,0 +1,278 @@
+/**
+ * 首页样式 - 简约科技风格（淡棕色主题）
+ */
+
+/* 页面容器 */
+.home-page {
+  min-height: calc(100vh - 64px);
+  background: #FAF8F5;
+}
+
+/* 搜索栏区域 */
+.home-search-section {
+  background: linear-gradient(135deg, #8B7355 0%, #A08060 100%);
+  padding: 24px 16px 32px;
+  position: relative;
+}
+
+.search-container {
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+
+/* 搜索框 */
+.home-search-input {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.home-search-input .ant-input {
+  border-radius: 12px 0 0 12px !important;
+  border: none !important;
+  padding: 8px 16px;
+}
+
+.home-search-input .ant-input-search-button {
+  border-radius: 0 12px 12px 0 !important;
+  border: none !important;
+  background: #8B7355 !important;
+  width: 60px;
+  transition: all 0.3s ease;
+}
+
+.home-search-input .ant-input-search-button:hover {
+  background: #6B5335 !important;
+}
+
+/* 分类金刚区 */
+.category-grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 80px;
+}
+
+.category-item:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.category-item.active {
+  background: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.category-item.active .category-icon {
+  transform: scale(1.1);
+}
+
+.category-item.active .category-name {
+  color: #8B7355;
+  font-weight: 600;
+}
+
+.category-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 8px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.category-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+/* 筛选标签 */
+.filter-tags {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.tag-close {
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.tag-close:hover {
+  opacity: 1;
+}
+
+/* 商品列表区域 */
+.home-goods-section {
+  padding: 24px 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.goods-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.goods-count {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.load-more-hint {
+  font-size: 13px;
+  color: #999;
+}
+
+/* 瀑布流网格 */
+.goods-masonry {
+  margin: 0 !important;
+}
+
+.goods-masonry > .ant-row {
+  margin-left: -8px !important;
+  margin-right: -8px !important;
+}
+
+.goods-masonry > .ant-row > .ant-col {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+/* 骨架屏 */
+.skeleton-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.skeleton-card .skeleton-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 加载更多 */
+.loading-more {
+  text-align: center;
+  padding: 24px;
+  color: #999;
+}
+
+.loading-more .ant-spin {
+  color: #8B7355;
+}
+
+/* 没有更多 */
+.no-more {
+  text-align: center;
+  padding: 32px 16px;
+  color: #bbb;
+  font-size: 14px;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .home-search-section {
+    padding: 16px 12px 24px;
+  }
+
+  .search-container {
+    margin-bottom: 16px;
+  }
+
+  .category-grid {
+    gap: 8px;
+  }
+
+  .category-item {
+    padding: 8px 12px;
+    min-width: 60px;
+  }
+
+  .category-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .category-name {
+    font-size: 11px;
+  }
+
+  .home-goods-section {
+    padding: 16px 12px;
+  }
+
+  .goods-masonry > .ant-row > .ant-col {
+    margin-bottom: 12px !important;
+  }
+
+  .filter-tags {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-item {
+    padding: 6px 10px;
+    min-width: 50px;
+  }
+
+  .category-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .category-name {
+    font-size: 10px;
+  }
+}
