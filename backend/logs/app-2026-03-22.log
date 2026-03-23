@@ -181,3 +181,27 @@ Meta: {"responseTime":7}
 [2026-03-22T15:55:11.628Z] [INFO] → Method: GET, URL: /api/goods?page=1&pageSize=12, Query: {"page":"1","pageSize":"12"}, Body: undefined, Headers: {"host":"localhost:3001","connection":"keep-alive","sec-ch-ua-platform":"\"Windows\"","authorization":"Bearer ***","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36","accept":"application/json, text/plain, */*","sec-ch-ua":"\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"","sec-ch-ua-mobile":"?0","origin":"http://localhost:5173","sec-fetch-site":"same-site","sec-fetch-mode":"cors","sec-fetch-dest":"empty","referer":"http://localhost:5173/","accept-encoding":"gzip, deflate, br, zstd","accept-language":"zh-CN,zh;q=0.9","if-none-match":"W/\"2ac-8DY7xGM6P6hGn7dX8G8xR1FRxNg\""}
 [2026-03-22T15:55:11.635Z] [INFO] ← GET /?page=1&pageSize=12 - Status: 200 - Time: 7ms
 Meta: {"responseTime":7}
+[2026-03-22T15:59:58.262Z] [INFO] → Method: GET, URL: /api/books/9787115424802, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:00:08.309Z] [INFO] ← GET /9787115424802 - Status: 200 - Time: 10047ms
+Meta: {"responseTime":10047}
+[2026-03-22T16:00:13.474Z] [INFO] → Method: GET, URL: /api/books/9780141036144, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:00:23.481Z] [INFO] ← GET /9780141036144 - Status: 200 - Time: 10007ms
+Meta: {"responseTime":10007}
+[2026-03-22T16:00:43.480Z] [INFO] → Method: GET, URL: /api/books/9780307474278, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:00:53.489Z] [INFO] ← GET /9780307474278 - Status: 200 - Time: 10009ms
+Meta: {"responseTime":10009}
+[2026-03-22T16:00:57.535Z] [INFO] → Method: GET, URL: /api/books/9780307474278, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:01:07.547Z] [INFO] ← GET /9780307474278 - Status: 200 - Time: 10012ms
+Meta: {"responseTime":10012}
+[2026-03-22T16:02:41.452Z] [INFO] → Method: GET, URL: /api/books/9787115424802, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:02:57.521Z] [INFO] ← GET /9787115424802 - Status: 200 - Time: 16069ms
+Meta: {"responseTime":16069}
+[2026-03-22T16:03:07.357Z] [INFO] → Method: GET, URL: /api/books/9780321125217, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:03:23.378Z] [INFO] ← GET /9780321125217 - Status: 200 - Time: 16020ms
+Meta: {"responseTime":16020}
+[2026-03-22T16:03:27.547Z] [INFO] → Method: GET, URL: /api/books/9780593139134, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:03:43.566Z] [INFO] ← GET /9780593139134 - Status: 200 - Time: 16019ms
+Meta: {"responseTime":16019}
+[2026-03-22T16:03:48.905Z] [INFO] → Method: GET, URL: /api/books/9787208064864, Query: {}, Body: undefined, Headers: {"host":"localhost:3001","user-agent":"curl/8.16.0","accept":"*/*"}
+[2026-03-22T16:04:04.923Z] [INFO] ← GET /9787208064864 - Status: 200 - Time: 16018ms
+Meta: {"responseTime":16018}

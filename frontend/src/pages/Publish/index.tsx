@@ -11,6 +11,8 @@ import { publishGoods } from '../../api/publish';
 import type { PublishGoodsParams } from '../../api/publish';
 import { getToken } from '../../api/user';
 import { GoodsCondition } from '../../types/goods';
+import ISBNScanner from '../../components/ISBNScanner';
+import type { BookInfo } from '../../api/book';
 import './index.css';
 
 const { Option } = Select;
@@ -44,6 +46,40 @@ const PublishPage: React.FC = () => {
     const [formValues, setFormValues] = useState<any>({});
     const [isBook, setIsBook] = useState(false);
 
+    // 扫码成功回调
+    const handleScanSuccess = (bookInfo: BookInfo) => {
+        // 自动设置为图书模式
+        setIsBook(true);
+        
+        // 填充表单
+        form.setFieldsValue({
+            title: bookInfo.title,
+            author: bookInfo.author,
+            publisher: bookInfo.publisher,
+            publishYear: bookInfo.publishYear,
+            pages: bookInfo.pages,
+            isbn: bookInfo.isbn
+        });
+
+        // 如果有封面图，添加到图片列表
+        if (bookInfo.coverUrl) {
+            setImageUrls(prev => {
+                if (!prev.includes(bookInfo.coverUrl!)) {
+                    return [bookInfo.coverUrl!, ...prev];
+                }
+                return prev;
+            });
+        }
+
+        // 自动选择图书分类
+        const bookCategory = categories.find(c => c.name === '图书文具');
+        if (bookCategory) {
+            form.setFieldsValue({ categoryId: bookCategory.id });
+        }
+
+        message.success(`已自动填充《${bookInfo.title}》信息`);
+    };
+
     // 检查登录
     const token = getToken();
     if (!token) {
@@ -73,10 +109,18 @@ const PublishPage: React.FC = () => {
                 params.isbn = values.isbn || '';
                 params.author = values.author || '';
                 params.publisher = values.publisher || '';
-                params.publishYear = values.publishYear || 0;
+                params.publishYear = values.publishYear || new Date().getFullYear();
                 params.edition = values.edition || '';
                 params.language = values.language || '中文';
-                params.pages = values.pages || 0;
+                // pages 至少为 1，避免后端验证失败
+                params.pages = values.pages > 0 ? values.pages : 1;
+            }
+            
+            // 确保 pickupLocation 有值
+            if (!params.pickupLocation) {
+                message.warning('请填写取货地点');
+                setLoading(false);
+                return;
             }
 
             const res = await publishGoods(params);
@@ -145,7 +189,12 @@ const PublishPage: React.FC = () => {
                             {/* 商品标题 */}
                             <Form.Item
                                 name="title"
-                                label="商品标题"
+                                label={
+                                    <span>
+                                        商品标题
+                                        <ISBNScanner onSuccess={handleScanSuccess} onSkip={() => {}} />
+                                    </span>
+                                }
                                 rules={[
                                     { required: true, message: '请输入商品标题' },
                                     { max: 100, message: '标题不能超过100字' }

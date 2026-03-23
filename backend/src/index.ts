@@ -12,6 +12,7 @@ import userRouter from './routes/user';
 import collectRouter from './routes/collect';
 import messageRouter from './routes/message';
 import publishRouter from './routes/publish';
+import bookRouter from './routes/book';
 import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
@@ -47,6 +48,9 @@ app.use('/api/message', messageRouter);
 
 // 商品发布相关路由
 app.use('/api/publish', publishRouter);
+
+// 图书相关路由
+app.use('/api/books', bookRouter);
 
 // 404 处理
 app.use(notFoundHandler);
